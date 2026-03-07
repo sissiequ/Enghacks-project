@@ -1,8 +1,13 @@
-// Initialize PDF.js worker
+/**
+ * 设置页面逻辑 (options.js)
+ * 负责：处理 UI 交互，保存 API Key，以及使用 PDF.js 解析并保存简历文本
+ */
+
+// 初始化 PDF.js worker
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'lib/pdf.worker.min.js';
 
 document.addEventListener('DOMContentLoaded', () => {
-  // DOM Elements
+  // DOM 元素获取
   const apiKeyInput = document.getElementById('apiKey');
   const saveApiBtn = document.getElementById('saveApiBtn');
   const apiStatus = document.getElementById('apiStatus');
@@ -15,31 +20,30 @@ document.addEventListener('DOMContentLoaded', () => {
   const exportJobsBtn = document.getElementById('exportJobsBtn');
   const exportStatus = document.getElementById('exportStatus');
 
-  // Load existing data
-  chrome.storage.local.get(['geminiApiKey', 'resumeText'], function(result) {
-    if (result.geminiApiKey && apiKeyInput) {
-      apiKeyInput.value = result.geminiApiKey;
+  // 1. 加载现有数据 (使用 apiKey 键名与 background.js 对应)
+  chrome.storage.local.get(['apiKey', 'resumeText'], function(result) {
+    if (result.apiKey && apiKeyInput) {
+      apiKeyInput.value = result.apiKey;
     }
     if (result.resumeText && resumeTextPreview) {
-      resumeTextPreview.textContent = result.resumeText.length > 500 
-        ? result.resumeText.substring(0, 500) + "\n\n... [Resume truncated for preview]" 
-        : result.resumeText;
+      updateResumePreview(result.resumeText);
     }
   });
 
-  // Save API Key
+  // 2. 保存 API Key
   if (saveApiBtn) {
     saveApiBtn.addEventListener('click', () => {
       const apiKey = apiKeyInput.value.trim();
       if (!apiKey) {
-        alert("Please enter a valid API Key.");
+        alert("请输入有效的 API Key。");
         return;
       }
-      chrome.storage.local.set({ geminiApiKey: apiKey }, function() {
+      // 关键：这里必须保存为 'apiKey' 以供后台脚本读取
+      chrome.storage.local.set({ apiKey: apiKey }, function() {
         if (apiStatus) {
-          apiStatus.textContent = 'Settings saved successfully!';
+          apiStatus.textContent = '设置已成功保存！';
           apiStatus.style.display = 'block';
-          apiStatus.style.color = '#0d652d';
+          apiStatus.style.color = '#389e0d';
           setTimeout(() => {
             apiStatus.style.display = 'none';
           }, 3000);
@@ -48,19 +52,16 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Handle PDF Upload via Click
+  // 3. 简历上传处理 (点击区域)
   if (dropZone && fileInput) {
     dropZone.addEventListener('click', () => fileInput.click());
 
-    // Handle File Selection
     fileInput.addEventListener('change', (e) => {
       const file = e.target.files[0];
-      if (file) {
-        handlePdfFile(file);
-      }
+      if (file) handlePdfFile(file);
     });
 
-    // Drag and Drop functionality
+    // 拖拽逻辑
     dropZone.addEventListener('dragover', (e) => {
       e.preventDefault();
       dropZone.classList.add('dragover');
@@ -78,35 +79,23 @@ document.addEventListener('DOMContentLoaded', () => {
       if (file && file.type === 'application/pdf') {
         handlePdfFile(file);
       } else {
-        alert("Please upload a valid PDF file.");
+        alert("请上传有效的 PDF 文件。");
       }
     });
   }
   
-  if (exportJobsBtn) {
-    exportJobsBtn.addEventListener('click', () => {
-      // Stub for export functionality if the user added it
-      if (exportStatus) {
-        exportStatus.textContent = "Export functionality to be implemented in background script.";
-        exportStatus.style.display = 'block';
-      }
-    });
-  }
-
+  // 4. PDF 解析核心函数
   function handlePdfFile(file) {
     if (resumeTextPreview) {
-      resumeTextPreview.textContent = "Parsing PDF...";
+      resumeTextPreview.textContent = "正在解析 PDF，请稍候...";
     }
     
     const fileReader = new FileReader();
-    
     fileReader.onload = function() {
       const typedarray = new Uint8Array(this.result);
 
       if (typeof pdfjsLib === 'undefined') {
-        if (resumeTextPreview) {
-            resumeTextPreview.textContent = "Error: PDF.js library not loaded.";
-        }
+        if (resumeTextPreview) resumeTextPreview.textContent = "错误: PDF.js 库未加载。";
         return;
       }
 
@@ -127,15 +116,11 @@ document.addEventListener('DOMContentLoaded', () => {
         Promise.all(textPromises).then(pageTexts => {
           const fullText = pageTexts.join('\n\n');
           
-          // Save to storage
+          // 保存简历文本到存储
           chrome.storage.local.set({ resumeText: fullText }, function() {
-            if (resumeTextPreview) {
-                resumeTextPreview.textContent = fullText.length > 500 
-                  ? fullText.substring(0, 500) + "\n\n... [Resume truncated for preview]" 
-                  : fullText;
-            }
+            updateResumePreview(fullText);
             if (pdfStatus) {
-              pdfStatus.textContent = 'Resume parsed and saved successfully.';
+              pdfStatus.textContent = '简历已解析并保存成功。';
               pdfStatus.style.display = 'block';
               setTimeout(() => {
                 pdfStatus.style.display = 'none';
@@ -144,13 +129,30 @@ document.addEventListener('DOMContentLoaded', () => {
           });
         });
       }).catch(error => {
-        console.error("Error parsing PDF:", error);
-        if (resumeTextPreview) {
-            resumeTextPreview.textContent = "Error parsing PDF. See console for details.";
-        }
+        console.error("PDF 解析出错:", error);
+        if (resumeTextPreview) resumeTextPreview.textContent = "解析失败，请确保文件是标准 PDF 格式。";
       });
     };
-    
     fileReader.readAsArrayBuffer(file);
+  }
+
+  // 预览文本辅助函数
+  function updateResumePreview(text) {
+    if (resumeTextPreview) {
+      resumeTextPreview.textContent = text.length > 800 
+        ? text.substring(0, 800) + "\n\n... [简历内容过长，仅显示预览]" 
+        : text;
+    }
+  }
+
+  // 导出按钮占位
+  if (exportJobsBtn) {
+    exportJobsBtn.addEventListener('click', () => {
+      if (exportStatus) {
+        exportStatus.textContent = "导出功能开发中...";
+        exportStatus.style.display = 'block';
+        setTimeout(() => exportStatus.style.display = 'none', 2000);
+      }
+    });
   }
 });

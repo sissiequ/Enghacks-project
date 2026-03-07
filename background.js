@@ -1,75 +1,142 @@
 /**
  * 核心后台逻辑 (Service Worker)
- * 负责：监听来自 content.js 的消息并调用 API
- * 禁止：使用 document, window, alert
+ * 负责：监听来自 content.js 的分析消息，调用 OpenRouter API 并返回 JSON 结果
  */
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === "analyzeJob") {
-    
-    // 1. 从存储中读取用户通过 options 页面保存的 Key
-    chrome.storage.local.get(['apiKey'], async (result) => {
-      const savedApiKey = result.apiKey;
+    // 调用异步函数处理请求
+    handleJobAnalysis(request.jobDescription, sendResponse);
+    // 返回 true 以表示我们将异步发送响应 (异步通道保持开启)
+    return true;
+  }
+});
 
-      if (!savedApiKey || savedApiKey.trim() === "") {
-        sendResponse({ 
-          success: false, 
-          error: "未检测到 API Key，请右键点击插件图标进入“选项”进行配置。" 
-        });
-        return;
-      }
+/**
+ * 处理职位分析的异步函数
+ */
+async function handleJobAnalysis(jobDescription, sendResponse) {
+  try {
+    // 1. 获取本地存储的配置
+    const storage = await chrome.storage.local.get(['apiKey', 'resumeText']);
+    
+    const rawApiKey = storage.apiKey || "";
+    const apiKey = rawApiKey.trim();
+    const resumeText = storage.resumeText || "";
+
+    // 调试日志
+    console.log("CoopSync: 正在读取存储中的 API Key... 长度为:", apiKey.length);
+
+    // 2. 预检
+    if (!apiKey || apiKey === "") {
+      sendResponse({ 
+        success: false, 
+        error: "Authentication Failed: API Key 缺失。请在设置中重新保存 Key。" 
+      });
+      return;
+    }
+
+    if (resumeText.length < 50) {
+      sendResponse({ 
+        success: false, 
+        error: "简历内容缺失：请先在设置页面上传并解析您的 PDF 简历。" 
+      });
+      return;
+    }
+
+    // 3. 定义请求函数（带重试逻辑）
+    const fetchWithRetry = async (retries = 3, backoff = 1000) => {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 45000);
 
       try {
-        // 2. 发起 API 请求 (这里以 OpenAI 为例，你也可以根据需要更换 API 地址)
-        const response = await fetch("https://api.openai.com/v1/chat/completions", {
+        const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${savedApiKey.trim()}`
+            "Authorization": `Bearer ${apiKey}`,
+            "HTTP-Referer": "https://github.com/coopsync/coopsync-ai",
+            "X-Title": "CoopSync AI Assistant"
           },
           body: JSON.stringify({
-            model: "gpt-3.5-turbo",
+            // 使用更稳定的模型 ID
+            model: "google/gemini-2.0-flash-001",
             messages: [
               { 
                 role: "system", 
-                content: "你是一个专业的求职顾问。请根据职位描述给出建议。必须返回 JSON 格式，包含 score (0-100的数字) 和 suggestions (字符串数组)。" 
+                content: "你是一个专业的求职顾问。我会给你一份简历和一份职位描述。请分析两者的匹配度。你必须只返回一个合法的 JSON 对象，包含 score (0-100的数字) 和 suggestions (至少3条针对性的简历修改建议，字符串数组形式)。不要包含任何额外的描述文字或 Markdown 标签。" 
               },
               { 
                 role: "user", 
-                content: `职位描述如下：${request.jobDescription}` 
+                content: `我的简历内容：\n${resumeText}\n\n职位描述如下：\n${jobDescription}` 
               }
             ],
             response_format: { type: "json_object" }
-          })
+          }),
+          signal: controller.signal
         });
+
+        clearTimeout(timeoutId);
+
+        if (response.status === 429 && retries > 0) {
+          // 频率限制，等待后重试
+          await new Promise(resolve => setTimeout(resolve, backoff));
+          return fetchWithRetry(retries - 1, backoff * 2);
+        }
 
         const data = await response.json();
 
         if (!response.ok) {
-          throw new Error(data.error?.message || `API 请求失败: ${response.status}`);
+          throw new Error(data.error?.message || `HTTP ${response.status}`);
         }
 
-        // 3. 解析并返回结果
-        const aiContent = JSON.parse(data.choices[0].message.content);
-        
-        sendResponse({ 
-          success: true, 
-          data: {
-            score: aiContent.score || 0,
-            suggestions: aiContent.suggestions || []
-          } 
-        });
+        return data;
+      } catch (err) {
+        clearTimeout(timeoutId);
+        if (retries > 0 && err.name !== 'AbortError') {
+          await new Promise(resolve => setTimeout(resolve, backoff));
+          return fetchWithRetry(retries - 1, backoff * 2);
+        }
+        throw err;
+      }
+    };
 
-      } catch (error) {
-        console.error("CoopSync Background Error:", error);
-        sendResponse({ 
-          success: false, 
-          error: "分析失败: " + error.message 
-        });
+    // 4. 执行请求
+    console.log("CoopSync: 正在发起分析请求...");
+    const data = await fetchWithRetry();
+
+    // 5. 解析结果
+    if (!data.choices || data.choices.length === 0) {
+      throw new Error("AI 未能返回任何有效预测内容。");
+    }
+
+    const aiRawContent = data.choices[0].message.content;
+    let result;
+    
+    try {
+      result = JSON.parse(aiRawContent);
+    } catch (parseError) {
+      console.error("JSON 解析失败:", aiRawContent);
+      throw new Error("AI 返回的数据格式无法解析。");
+    }
+
+    // 6. 返回结果
+    sendResponse({
+      success: true,
+      data: {
+        score: result.score || 0,
+        suggestions: result.suggestions || ["未能提取到具体的建议。"]
       }
     });
 
-    // 必须返回 true 以支持异步回调
-    return true; 
+  } catch (error) {
+    console.error("CoopSync 后台报错:", error);
+    let userFriendlyError = error.message;
+    if (error.name === 'AbortError') userFriendlyError = "请求超时，OpenRouter 响应慢。";
+    
+    sendResponse({ 
+      success: false, 
+      error: "分析失败: " + userFriendlyError 
+    });
   }
-});
+}

@@ -1,146 +1,87 @@
 <!DOCTYPE html>
 <html>
-
 <head>
-  <title>CoopSync AI Options</title>
+  <meta charset="UTF-8">
+  <title>CoopSync 设置</title>
+  <!-- 引入 PDF.js 库 -->
+  <script src="lib/pdf.min.js"></script>
   <style>
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      padding: 20px;
-      max-width: 600px;
-      margin: 0 auto;
-      background-color: #f8f9fa;
-    }
+    body { font-family: 'Inter', sans-serif; padding: 20px; width: 400px; background-color: #ffffff; color: #333; }
+    h2 { font-size: 20px; margin-bottom: 20px; color: #1a1a1a; border-bottom: 2px solid #FFD54F; padding-bottom: 8px; }
+    .section { margin-bottom: 30px; }
+    label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px; }
+    input[type="password"] { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; font-size: 14px; transition: border-color 0.2s; margin-bottom: 10px; }
+    input:focus { outline: none; border-color: #FFD54F; box-shadow: 0 0 0 2px rgba(255, 213, 79, 0.2); }
+    
+    button { width: 100%; padding: 12px; background-color: #1a1a1a; color: #FFD54F; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 14px; transition: background 0.2s; }
+    button:hover { background-color: #333; }
 
-    .card {
-      background: white;
-      padding: 24px;
+    /* 简历上传区样式 */
+    #dropZone {
+      border: 2px dashed #ccc;
       border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-      margin-bottom: 20px;
-    }
-
-    h2 {
-      margin-top: 0;
-      color: #333;
-    }
-
-    .form-group {
-      margin-bottom: 16px;
-    }
-
-    label {
-      display: block;
-      margin-bottom: 6px;
-      font-weight: 500;
-      color: #555;
-    }
-
-    input[type="password"] {
-      width: 100%;
-      padding: 10px;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      font-size: 14px;
-      box-sizing: border-box;
-    }
-
-    button {
-      background-color: #1a73e8;
-      color: white;
-      border: none;
-      padding: 10px 16px;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 14px;
-      font-weight: 500;
-    }
-
-    button:hover {
-      background-color: #1557b0;
-    }
-
-    .status {
-      margin-top: 10px;
-      color: #0d652d;
-      font-size: 14px;
-      display: none;
-    }
-
-    .file-upload {
-      border: 2px dashed #ddd;
-      padding: 30px;
+      padding: 30px 20px;
       text-align: center;
-      border-radius: 8px;
-      cursor: pointer;
       background: #fafafa;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-bottom: 15px;
     }
-
-    .file-upload.dragover {
-      background: #e3f2fd;
-      border-color: #1a73e8;
+    #dropZone.dragover {
+      border-color: #FFD54F;
+      background: #fffdf5;
     }
-
+    #dropZone p { margin: 0; color: #666; font-size: 14px; }
+    
     #resumeTextPreview {
       width: 100%;
-      height: 150px;
-      margin-top: 10px;
+      height: 120px;
+      background: #f0f0f0;
+      border-radius: 6px;
       padding: 10px;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      font-family: monospace;
       font-size: 12px;
-      background: #f5f5f5;
-      resize: vertical;
-      box-sizing: border-box;
-      white-space: pre-wrap;
+      color: #444;
       overflow-y: auto;
+      white-space: pre-wrap;
+      box-sizing: border-box;
+      border: 1px solid #eee;
     }
+
+    .status-msg { margin-top: 10px; font-size: 13px; font-weight: 500; display: none; }
+    .hint { font-size: 12px; color: #666; margin-top: 5px; line-height: 1.4; }
   </style>
 </head>
-
 <body>
+  <h2>CoopSync AI 设置</h2>
 
-  <div class="card">
-    <h2>API Configuration</h2>
-    <div class="form-group">
-      <label for="apiKey">OpenRouter API Key</label>
-      <input type="password" id="apiKey" placeholder="Enter your OpenRouter API key...">
-    </div>
-    <button id="saveApiBtn">Save API Key</button>
-    <div id="apiStatus" class="status">Settings saved.</div>
+  <!-- API 设置部分 -->
+  <div class="section">
+    <label for="apiKey">OpenRouter API Key:</label>
+    <input type="password" id="apiKey" placeholder="sk-or-v1-...">
+    <button id="saveApiBtn">保存设置</button>
+    <div id="apiStatus" class="status-msg"></div>
+    <div class="hint">请填入以 <b>sk-or-v1-</b> 开头的 Key 以支持免费模型。</div>
   </div>
 
-  <div class="card">
-    <h2>Resume Upload</h2>
-    <p style="color: #666; font-size: 14px;">Upload your PDF resume to have it matched against job descriptions.</p>
-
-    <div class="file-upload" id="dropZone">
-      <input type="file" id="fileInput" accept=".pdf" style="display: none;">
-      <div>Click here to select a PDF file</div>
-      <div style="font-size: 12px; color: #888; margin-top: 8px;">or drag and drop here</div>
+  <!-- 简历上传部分 -->
+  <div class="section">
+    <label>上传简历 (PDF):</label>
+    <div id="dropZone">
+      <p>点击或拖拽简历文件至此</p>
+      <input type="file" id="fileInput" accept="application/pdf" style="display: none;">
     </div>
-
-    <div style="margin-top: 20px;">
-      <label>Parsed Resume Preview:</label>
-      <div id="resumeTextPreview">No resume parsed yet.</div>
-    </div>
-    <div id="pdfStatus" class="status" style="margin-top: 10px;">Resume parsed and saved successfully.</div>
+    <div id="pdfStatus" class="status-msg" style="color: #0d652d;"></div>
+    
+    <label style="margin-top: 15px;">简历文本预览:</label>
+    <div id="resumeTextPreview">尚未解析简历...</div>
   </div>
 
-  <div class="card">
-    <h2>Job Export</h2>
-    <p style="color: #666; font-size: 14px;">
-      Download all jobs under your current WaterlooWorks filter as a JSON file.
-    </p>
-    <button id="exportJobsBtn">Download Filtered Jobs (JSON)</button>
-    <div id="exportStatus" class="status" style="margin-top: 10px;"></div>
+  <!-- 额外功能 (可选) -->
+  <div class="section" style="border-top: 1px solid #eee; pt: 20px;">
+    <button id="exportJobsBtn" style="background: #fff; color: #1a1a1a; border: 1px solid #1a1a1a;">导出已保存职位</button>
+    <div id="exportStatus" class="status-msg"></div>
   </div>
 
-  <!-- Include PDF.js -->
-  <script src="lib/pdf.min.js"></script>
   <script src="options.js"></script>
-
 </body>
-
 </html>
