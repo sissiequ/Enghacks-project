@@ -2,6 +2,8 @@
 
 let lastProcessedJDHash = '';
 let isAnalyzing = false; // Add a lock to prevent concurrent analysis
+let pendingWwActionInProgress = false;
+let pendingWwActionWatcherStarted = false;
 
 /**
  * Extracts job description text from the page.
@@ -195,8 +197,12 @@ document.addEventListener('mouseup', () => {
 // Initialization
 if (document.readyState === 'complete' || document.readyState === 'interactive') {
     setupJobDetectionObserver();
+    startPendingWwActionWatcher();
 } else {
-    window.addEventListener('load', setupJobDetectionObserver);
+    window.addEventListener('load', () => {
+        setupJobDetectionObserver();
+        startPendingWwActionWatcher();
+    });
 }
 
 function cleanExportText(value) {
@@ -272,6 +278,16 @@ function clickNextPage() {
         return false;
     }
     nextBtn.click();
+    return true;
+}
+
+function clickFirstPage() {
+    const firstBtn = document.querySelector(".pagination__link[aria-label*='Go to first page']");
+    if (!firstBtn) return false;
+    if (firstBtn.classList.contains('disabled') || firstBtn.getAttribute('aria-disabled') === 'true') {
+        return false;
+    }
+    firstBtn.click();
     return true;
 }
 
@@ -772,9 +788,10 @@ async function ensureJobTableVisible() {
     await waitForCondition(() => getDataTable() !== null, 6000);
     if (getDataTable()) return true;
 
-    const allJobsBtn = Array.from(document.querySelectorAll('button, a')).find(el => {
+    const allJobsBtn = Array.from(document.querySelectorAll('button, a, [role=\"button\"]')).find(el => {
         const t = cleanExportText(el.innerText).toLowerCase();
-        return isVisibleElement(el) && t === 'all jobs';
+        const a = cleanExportText(el.getAttribute('aria-label') || '').toLowerCase();
+        return isVisibleElement(el) && (t.includes('all jobs') || a.includes('all jobs'));
     });
     if (allJobsBtn) {
         allJobsBtn.click();
@@ -782,6 +799,18 @@ async function ensureJobTableVisible() {
     }
 
     return getDataTable() !== null;
+}
+
+async function enterAllJobsListFirst() {
+    const allJobsBtn = Array.from(document.querySelectorAll('button, a, [role=\"button\"]')).find(el => {
+        const t = cleanExportText(el.innerText).toLowerCase();
+        const a = cleanExportText(el.getAttribute('aria-label') || '').toLowerCase();
+        return isVisibleElement(el) && (t.includes('all jobs') || a.includes('all jobs'));
+    });
+    if (!allJobsBtn) return;
+
+    allJobsBtn.click();
+    await waitForCondition(() => getDataTable() !== null, 6000);
 }
 
 async function extractHiringHistoryForPosting(postingId) {
@@ -820,6 +849,7 @@ async function extractHiringHistoryForPosting(postingId) {
 }
 
 async function exportAllFilteredJobs(maxPages = 100) {
+    await enterAllJobsListFirst();
     const all = [];
     const seen = new Set();
 
@@ -846,17 +876,205 @@ async function exportAllFilteredJobs(maxPages = 100) {
     return { jobs: enriched };
 }
 
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-    if (request.action !== 'EXPORT_FILTERED_JOBS') return;
+async function openPostingById(postingId, maxPages = 120) {
+    const targetId = cleanExportText(postingId);
+    if (!targetId) {
+        return { success: false, error: 'Posting ID is empty.' };
+    }
 
-    (async () => {
-        try {
-            const result = await exportAllFilteredJobs(120);
-            sendResponse({ success: true, jobs: result.jobs });
-        } catch (error) {
-            sendResponse({ success: false, error: error.message || 'Export failed in content script.' });
+    await enterAllJobsListFirst();
+
+    const ok = await ensureJobTableVisible();
+    if (!ok) {
+        return { success: false, error: 'Jobs table not visible.', error_code: 'jobs_table_not_visible' };
+    }
+
+    const firstRows = extractRowsFromCurrentPage();
+    const currentFirstId = firstRows[0]?.posting_id || '';
+    if (currentFirstId) {
+        const moved = clickFirstPage();
+        if (moved) {
+            await waitForPageTransition(currentFirstId);
         }
-    })();
+    }
 
-    return true;
+    for (let page = 1; page <= maxPages; page += 1) {
+        await ensureJobTableVisible();
+        const row = findJobRowByPostingId(targetId);
+        if (row && clickJobTitleInRow(row)) {
+            await waitForCondition(() => {
+                const t = document.body.innerText.toLowerCase();
+                return t.includes('return to job search overview') || t.includes('work term rating');
+            }, 10000);
+            return { success: true };
+        }
+
+        const pageRows = extractRowsFromCurrentPage();
+        const firstId = pageRows[0]?.posting_id || '';
+        if (!clickNextPage()) {
+            break;
+        }
+        await waitForPageTransition(firstId);
+    }
+
+    return {
+        success: false,
+        error: `Posting ${targetId} not found in current filtered results.`,
+        error_code: 'posting_not_found'
+    };
+}
+
+function findApplyElement() {
+    const strictSelectors = [
+        "button[aria-label*='Apply']",
+        "a[aria-label*='Apply']",
+        "button[title*='Apply']",
+        "a[title*='Apply']"
+    ];
+    for (const sel of strictSelectors) {
+        const node = document.querySelector(sel);
+        if (node && isVisibleElement(node)) return node;
+    }
+
+    const candidates = Array.from(document.querySelectorAll("button, a, [role='button'], input[type='button'], input[type='submit']"));
+    return candidates.find(el => {
+        const text = cleanExportText(
+            el.innerText || el.textContent || el.getAttribute('value') || el.getAttribute('aria-label') || ''
+        ).toLowerCase();
+        if (!text) return false;
+        if (!text.includes('apply')) return false;
+        if (text.includes('filter') || text.includes('deadline') || text.includes('applied')) return false;
+        return isVisibleElement(el);
+    }) || null;
+}
+
+async function openApplyByPostingId(postingId, maxPages = 120) {
+    const opened = await openPostingById(postingId, maxPages);
+    if (!opened?.success) return opened;
+
+    await waitForCondition(() => findApplyElement() !== null, 10000);
+    const applyEl = findApplyElement();
+    if (!applyEl) {
+        return {
+            success: false,
+            error: `Posting ${postingId} opened, but Apply button was not found.`,
+            error_code: 'apply_button_not_found'
+        };
+    }
+
+    applyEl.click();
+    return { success: true };
+}
+
+function isJobsPage() {
+    return window.location.pathname.includes('/myAccount/co-op/full/jobs.htm');
+}
+
+async function runPendingWwActionIfAny() {
+    if (!chrome || !chrome.storage || !chrome.storage.local) return;
+    if (!isJobsPage()) return;
+
+    let pending = null;
+    try {
+        const data = await chrome.storage.local.get('pendingWwAction');
+        pending = data?.pendingWwAction || null;
+    } catch (_e) {
+        return;
+    }
+
+    if (!pending || !pending.action) return;
+
+    const ageMs = Date.now() - Number(pending.createdAt || 0);
+    if (ageMs > 5 * 60 * 1000) {
+        await chrome.storage.local.remove('pendingWwAction');
+        return;
+    }
+
+    try {
+        let result = null;
+        if (pending.action === 'OPEN_POSTING_BY_ID') {
+            result = await openPostingById(pending.postingId, 60);
+        } else if (pending.action === 'OPEN_APPLY_BY_ID') {
+            result = await openApplyByPostingId(pending.postingId, 60);
+        } else {
+            await chrome.storage.local.remove('pendingWwAction');
+            return;
+        }
+
+        if (result && result.success) {
+            await chrome.storage.local.remove('pendingWwAction');
+            return;
+        }
+
+        const attempts = Number(pending.attempts || 0) + 1;
+        const terminalError = result?.error_code === 'posting_not_found' || result?.error_code === 'apply_button_not_found';
+        if (terminalError || attempts >= 4) {
+            await chrome.storage.local.remove('pendingWwAction');
+            return;
+        }
+
+        await chrome.storage.local.set({
+            pendingWwAction: {
+                ...pending,
+                attempts
+            }
+        });
+    } catch (_e) {}
+}
+
+function startPendingWwActionWatcher() {
+    if (pendingWwActionWatcherStarted) return;
+    if (!isJobsPage()) return;
+    pendingWwActionWatcherStarted = true;
+
+    const tick = async () => {
+        if (pendingWwActionInProgress) return;
+        pendingWwActionInProgress = true;
+        try {
+            await runPendingWwActionIfAny();
+        } finally {
+            pendingWwActionInProgress = false;
+        }
+    };
+
+    setTimeout(tick, 1200);
+    setInterval(tick, 2500);
+}
+
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    if (request.action === 'EXPORT_FILTERED_JOBS') {
+        (async () => {
+            try {
+                const result = await exportAllFilteredJobs(120);
+                sendResponse({ success: true, jobs: result.jobs });
+            } catch (error) {
+                sendResponse({ success: false, error: error.message || 'Export failed in content script.' });
+            }
+        })();
+        return true;
+    }
+
+    if (request.action === 'OPEN_POSTING_BY_ID') {
+        (async () => {
+            try {
+                const result = await openPostingById(request.postingId, 120);
+                sendResponse(result);
+            } catch (error) {
+                sendResponse({ success: false, error: error.message || 'Open posting failed in content script.' });
+            }
+        })();
+        return true;
+    }
+
+    if (request.action === 'OPEN_APPLY_BY_ID') {
+        (async () => {
+            try {
+                const result = await openApplyByPostingId(request.postingId, 120);
+                sendResponse(result);
+            } catch (error) {
+                sendResponse({ success: false, error: error.message || 'Open apply failed in content script.' });
+            }
+        })();
+        return true;
+    }
 });
