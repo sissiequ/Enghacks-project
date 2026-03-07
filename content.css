@@ -1,0 +1,102 @@
+/* Scoped to not interfere with WaterlooWorks native CSS */
+#coopsync-widget {
+  position: fixed;
+  top: 20px;
+  bottom: 20px;
+  right: 20px;
+  width: 33vw;
+  min-width: 350px;
+  max-width: 600px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  z-index: 2147483647 !important;
+  /* Maximum possible z-index to stay above WW modals */
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s ease;
+}
+
+#coopsync-widget.minimized {
+  transform: translateY(calc(100% - 40px));
+}
+
+#coopsync-header {
+  background: #111111;
+  /* WW Dark Header */
+  color: #FFD54F;
+  /* WW Yellow Accent */
+  padding: 12px 16px;
+  font-weight: 600;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+  border-bottom: 3px solid #FFD54F;
+}
+
+#coopsync-content {
+  padding: 16px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.coopsync-score-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.coopsync-score {
+  font-size: 32px;
+  font-weight: 700;
+  color: #222;
+  /* Dark instead of Blue */
+  text-shadow: 1px 1px 0px #FFD54F;
+  /* Subtle yellow glow */
+}
+
+.coopsync-analysis {
+  font-size: 14px;
+  color: #444;
+  line-height: 1.5;
+  margin-bottom: 16px;
+}
+
+.coopsync-suggestions-title {
+  font-weight: 600;
+  margin-bottom: 8px;
+  font-size: 14px;
+  color: #333;
+}
+
+.coopsync-suggestion-list {
+  margin: 0;
+  padding-left: 20px;
+  font-size: 13px;
+  color: #555;
+  line-height: 1.4;
+}
+
+.coopsync-suggestion-list li {
+  margin-bottom: 6px;
+}
+
+.coopsync-loading {
+  text-align: center;
+  padding: 20px;
+  color: #666;
+  font-size: 14px;
+}
+
+.coopsync-error {
+  color: #d32f2f;
+  background: #ffebee;
+  padding: 10px;
+  border-radius: 4px;
+  font-size: 13px;
+}

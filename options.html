@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>CoopSync AI Options</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      padding: 20px;
+      max-width: 600px;
+      margin: 0 auto;
+      background-color: #f8f9fa;
+    }
+
+    .card {
+      background: white;
+      padding: 24px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      margin-bottom: 20px;
+    }
+
+    h2 {
+      margin-top: 0;
+      color: #333;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 500;
+      color: #555;
+    }
+
+    input[type="password"] {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 14px;
+      box-sizing: border-box;
+    }
+
+    button {
+      background-color: #1a73e8;
+      color: white;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    button:hover {
+      background-color: #1557b0;
+    }
+
+    .status {
+      margin-top: 10px;
+      color: #0d652d;
+      font-size: 14px;
+      display: none;
+    }
+
+    .file-upload {
+      border: 2px dashed #ddd;
+      padding: 30px;
+      text-align: center;
+      border-radius: 8px;
+      cursor: pointer;
+      background: #fafafa;
+    }
+
+    .file-upload.dragover {
+      background: #e3f2fd;
+      border-color: #1a73e8;
+    }
+
+    #resumeTextPreview {
+      width: 100%;
+      height: 150px;
+      margin-top: 10px;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 12px;
+      background: #f5f5f5;
+      resize: vertical;
+      box-sizing: border-box;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="card">
+    <h2>API Configuration</h2>
+    <div class="form-group">
+      <label for="apiKey">OpenRouter API Key</label>
+      <input type="password" id="apiKey" placeholder="Enter your OpenRouter API key...">
+    </div>
+    <button id="saveApiBtn">Save API Key</button>
+    <div id="apiStatus" class="status">Settings saved.</div>
+  </div>
+
+  <div class="card">
+    <h2>Resume Upload</h2>
+    <p style="color: #666; font-size: 14px;">Upload your PDF resume to have it matched against job descriptions.</p>
+
+    <div class="file-upload" id="dropZone">
+      <input type="file" id="fileInput" accept=".pdf" style="display: none;">
+      <div>Click here to select a PDF file</div>
+      <div style="font-size: 12px; color: #888; margin-top: 8px;">or drag and drop here</div>
+    </div>
+
+    <div style="margin-top: 20px;">
+      <label>Parsed Resume Preview:</label>
+      <div id="resumeTextPreview">No resume parsed yet.</div>
+    </div>
+    <div id="pdfStatus" class="status" style="margin-top: 10px;">Resume parsed and saved successfully.</div>
+  </div>
+
+  <!-- Include PDF.js -->
+  <script src="lib/pdf.min.js"></script>
+  <script src="options.js"></script>
+
+</body>
+
+</html>

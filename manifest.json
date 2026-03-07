@@ -1,0 +1,38 @@
+{
+  "manifest_version": 3,
+  "name": "CoopSync AI Resume Analyzer",
+  "version": "1.1",
+  "description": "Real-time AI resume optimizer for WaterlooWorks using Gemini API.",
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "storage"
+  ],
+  "host_permissions": [
+    "https://waterlooworks.uwaterloo.ca/*",
+    "https://*.googleapis.com/*",
+    "https://openrouter.ai/*"
+  ],
+  "options_page": "options.html",
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://waterlooworks.uwaterloo.ca/*"
+      ],
+      "css": [
+        "content.css"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "run_at": "document_idle"
+    }
+  ],
+  "action": {
+    "default_title": "CoopSync AI Settings",
+    "default_popup": "options.html"
+  }
+}
