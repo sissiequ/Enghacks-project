@@ -1,75 +1,85 @@
-/**
- * 核心后台逻辑 (Service Worker)
- * 负责：监听来自 content.js 的消息并调用 API
- * 禁止：使用 document, window, alert
- */
-
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.action === "analyzeJob") {
-    
-    // 1. 从存储中读取用户通过 options 页面保存的 Key
-    chrome.storage.local.get(['apiKey'], async (result) => {
-      const savedApiKey = result.apiKey;
+  if (request.action !== "analyzeJob") return;
 
-      if (!savedApiKey || savedApiKey.trim() === "") {
-        sendResponse({ 
-          success: false, 
-          error: "未检测到 API Key，请右键点击插件图标进入“选项”进行配置。" 
-        });
-        return;
-      }
+  chrome.storage.local.get(["apiKey", "geminiApiKey"], async (result) => {
+    const savedApiKey = (result.apiKey || result.geminiApiKey || "").trim();
 
+    if (!savedApiKey) {
+      sendResponse({
+        success: false,
+        error: "未检测到 API Key，请在插件 Options 页面保存后重试。"
+      });
+      return;
+    }
+
+    try {
+      const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${savedApiKey}`,
+          "HTTP-Referer": "https://waterlooworks.uwaterloo.ca/",
+          "X-Title": "CoopSync AI Resume Analyzer"
+        },
+        body: JSON.stringify({
+          model: "openai/gpt-4o-mini",
+          messages: [
+            {
+              role: "system",
+              content:
+                "你是求职助手。请输出 JSON 对象，包含 score(0-100整数) 和 suggestions(字符串数组，最多5条)。"
+            },
+            {
+              role: "user",
+              content: `职位描述如下：\n${request.jobDescription || ""}`
+            }
+          ],
+          response_format: { type: "json_object" }
+        })
+      });
+
+      let data;
       try {
-        // 2. 发起 API 请求 (这里以 OpenAI 为例，你也可以根据需要更换 API 地址)
-        const response = await fetch("https://api.openai.com/v1/chat/completions", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${savedApiKey.trim()}`
-          },
-          body: JSON.stringify({
-            model: "gpt-3.5-turbo",
-            messages: [
-              { 
-                role: "system", 
-                content: "你是一个专业的求职顾问。请根据职位描述给出建议。必须返回 JSON 格式，包含 score (0-100的数字) 和 suggestions (字符串数组)。" 
-              },
-              { 
-                role: "user", 
-                content: `职位描述如下：${request.jobDescription}` 
-              }
-            ],
-            response_format: { type: "json_object" }
-          })
-        });
-
-        const data = await response.json();
-
-        if (!response.ok) {
-          throw new Error(data.error?.message || `API 请求失败: ${response.status}`);
-        }
-
-        // 3. 解析并返回结果
-        const aiContent = JSON.parse(data.choices[0].message.content);
-        
-        sendResponse({ 
-          success: true, 
-          data: {
-            score: aiContent.score || 0,
-            suggestions: aiContent.suggestions || []
-          } 
-        });
-
-      } catch (error) {
-        console.error("CoopSync Background Error:", error);
-        sendResponse({ 
-          success: false, 
-          error: "分析失败: " + error.message 
-        });
+        data = await response.json();
+      } catch (_err) {
+        data = {};
       }
-    });
 
-    // 必须返回 true 以支持异步回调
-    return true; 
-  }
+      if (!response.ok) {
+        const apiMsg =
+          data?.error?.message ||
+          data?.message ||
+          `API 请求失败: ${response.status}`;
+        throw new Error(apiMsg);
+      }
+
+      const content = data?.choices?.[0]?.message?.content;
+      if (!content) {
+        throw new Error("API 返回为空，未获得分析结果。");
+      }
+
+      let aiContent;
+      try {
+        aiContent = JSON.parse(content);
+      } catch (_err) {
+        throw new Error("API 返回不是有效 JSON。");
+      }
+
+      sendResponse({
+        success: true,
+        data: {
+          score: Number.isFinite(aiContent.score) ? aiContent.score : 0,
+          suggestions: Array.isArray(aiContent.suggestions) ? aiContent.suggestions : []
+        }
+      });
+    } catch (error) {
+      console.error("CoopSync Background Error:", error);
+      sendResponse({
+        success: false,
+        error: `分析失败: ${error?.message || "未知错误"}`
+      });
+    }
+  });
+
+  return true;
 });
