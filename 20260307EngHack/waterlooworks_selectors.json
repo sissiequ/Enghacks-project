@@ -1,0 +1,13 @@
+{
+  "results_ready": "body",
+  "job_card": "article, .job-card, .search-result, [data-testid='job-card']",
+  "title": "h2, h3, a",
+  "company": ".company, [data-testid='company'], .employer",
+  "location": ".location, [data-testid='location']",
+  "term": ".term, [data-testid='term']",
+  "posted_date": ".posted, [data-testid='posted']",
+  "deadline": ".deadline, [data-testid='deadline']",
+  "job_id": ".job-id, [data-testid='job-id']",
+  "detail_link": "a[href]",
+  "next_button": "button[aria-label*='Next'], a[aria-label*='Next'], .pagination-next a, .pagination-next button"
+}
