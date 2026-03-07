@@ -4,6 +4,7 @@ let lastProcessedJDHash = '';
 let isAnalyzing = false; // Add a lock to prevent concurrent analysis
 let pendingWwActionInProgress = false;
 let pendingWwActionWatcherStarted = false;
+let isExportingJobs = false;
 
 /**
  * Extracts job description text from the page.
@@ -1081,11 +1082,19 @@ function startPendingWwActionWatcher() {
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.action === 'EXPORT_FILTERED_JOBS') {
         (async () => {
+            if (isExportingJobs) {
+                sendResponse({ success: false, error: 'Export already in progress. Please wait for it to finish.' });
+                return;
+            }
+
+            isExportingJobs = true;
             try {
                 const result = await exportAllFilteredJobs(120);
                 sendResponse({ success: true, jobs: result.jobs });
             } catch (error) {
                 sendResponse({ success: false, error: error.message || 'Export failed in content script.' });
+            } finally {
+                isExportingJobs = false;
             }
         })();
         return true;
