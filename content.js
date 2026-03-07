@@ -2,6 +2,7 @@
 
 let lastProcessedJDHash = '';
 let isAnalyzing = false; // Add a lock to prevent concurrent analysis
+let isExportingJobs = false;
 
 /**
  * Extracts job description text from the page.
@@ -265,14 +266,61 @@ function canGoNextPage() {
     return !nextBtn.classList.contains('disabled') && nextBtn.getAttribute('aria-disabled') !== 'true';
 }
 
+function triggerDomAction(el) {
+    if (!el) return false;
+
+    let fired = false;
+    const stopJavascriptHref = (event) => {
+        fired = true;
+        event.preventDefault();
+    };
+
+    el.addEventListener('click', stopJavascriptHref, true);
+    try {
+        el.dispatchEvent(new MouseEvent('click', {
+            view: window,
+            bubbles: true,
+            cancelable: true
+        }));
+
+        if (typeof el.onclick === 'function') {
+            el.onclick(new MouseEvent('click', {
+                view: window,
+                bubbles: true,
+                cancelable: true
+            }));
+        }
+    } catch (_e) {
+        return false;
+    } finally {
+        el.removeEventListener('click', stopJavascriptHref, true);
+    }
+
+    return fired || true;
+}
+
 function clickNextPage() {
     const nextBtn = document.querySelector(".pagination__link[aria-label*='Go to next page']");
     if (!nextBtn) return false;
     if (nextBtn.classList.contains('disabled') || nextBtn.getAttribute('aria-disabled') === 'true') {
         return false;
     }
-    nextBtn.click();
-    return true;
+    return triggerDomAction(nextBtn);
+}
+
+function canGoFirstPage() {
+    const firstBtn = document.querySelector(".pagination__link[aria-label*='Go to first page']");
+    if (!firstBtn) return false;
+    return !firstBtn.classList.contains('disabled') && firstBtn.getAttribute('aria-disabled') !== 'true';
+}
+
+function clickFirstPage() {
+    const firstBtn = document.querySelector(".pagination__link[aria-label*='Go to first page']");
+    if (!firstBtn) return false;
+    if (firstBtn.classList.contains('disabled') || firstBtn.getAttribute('aria-disabled') === 'true') {
+        return false;
+    }
+    return triggerDomAction(firstBtn);
 }
 
 function sleep(ms) {
@@ -290,6 +338,20 @@ async function waitForPageTransition(prevFirstId, timeoutMs = 12000) {
         if (!canGoNextPage()) return true;
     }
     return false;
+}
+
+async function resetToFirstPage() {
+    const ok = await ensureJobTableVisible();
+    if (!ok) return false;
+
+    if (!canGoFirstPage()) return true;
+
+    const currentRows = extractRowsFromCurrentPage();
+    const prevFirstId = currentRows[0]?.posting_id || '';
+    if (!clickFirstPage()) return false;
+
+    await waitForPageTransition(prevFirstId);
+    return true;
 }
 
 function sectionByHeadingMatch(matchers) {
@@ -823,6 +885,8 @@ async function exportAllFilteredJobs(maxPages = 100) {
     const all = [];
     const seen = new Set();
 
+    await resetToFirstPage();
+
     for (let page = 1; page <= maxPages; page += 1) {
         const ok = await ensureJobTableVisible();
         if (!ok) break;
@@ -850,11 +914,19 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.action !== 'EXPORT_FILTERED_JOBS') return;
 
     (async () => {
+        if (isExportingJobs) {
+            sendResponse({ success: false, error: 'Export already in progress. Please wait for it to finish.' });
+            return;
+        }
+
+        isExportingJobs = true;
         try {
             const result = await exportAllFilteredJobs(120);
             sendResponse({ success: true, jobs: result.jobs });
         } catch (error) {
             sendResponse({ success: false, error: error.message || 'Export failed in content script.' });
+        } finally {
+            isExportingJobs = false;
         }
     })();
 
