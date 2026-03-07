@@ -80,6 +80,26 @@ function updateWidgetWithResults(response) {
     }
 
     const { score, suggestions } = response.data;
+    const normalizeSuggestion = (s) => {
+        if (!s) return null;
+        if (typeof s === 'string') {
+            return {
+                section: 'Resume',
+                target: 'General',
+                issue: 'Generic suggestion',
+                rewrite: s
+            };
+        }
+        return {
+            section: (s.section || 'Resume').toString(),
+            target: (s.target || 'General').toString(),
+            issue: (s.issue || '').toString(),
+            rewrite: (s.rewrite || '').toString()
+        };
+    };
+    const normalizedSuggestions = (Array.isArray(suggestions) ? suggestions : [])
+        .map(normalizeSuggestion)
+        .filter(Boolean);
     contentArea.innerHTML = `
     <div style="margin-bottom:40px; background: #fff; padding: 25px; border-radius: 12px; border: 1px solid #eee; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
       <div style="font-size:22px; font-weight: 900; color: #111; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px;">Match Score</div>
@@ -89,9 +109,11 @@ function updateWidgetWithResults(response) {
     <div style="font-weight:900; font-size:24px; margin-bottom:20px; color:#111; border-left: 6px solid #FFD54F; padding-left: 15px;">Resume Optimization:</div>
     
     <div style="display: flex; flex-direction: column; gap: 15px;">
-      ${suggestions.map(s => `
+      ${normalizedSuggestions.map(s => `
         <div style="background: white; padding: 20px; border-radius: 10px; border-left: 4px solid #111; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
-          <span style="font-size:18px; line-height: 1.6; color: #000; font-weight: 700;">${s}</span>
+          <div style="font-size:12px; font-weight:800; letter-spacing:0.4px; color:#666; margin-bottom:8px;">${s.section} - ${s.target}</div>
+          <div style="font-size:15px; line-height:1.6; color:#333; margin-bottom:10px;"><b>Issue:</b> ${s.issue || 'Not specified'}</div>
+          <div style="font-size:16px; line-height:1.7; color:#000; font-weight:700;"><b>Rewrite:</b> ${s.rewrite || 'No rewrite provided.'}</div>
         </div>
       `).join('')}
     </div>
@@ -138,6 +160,8 @@ function triggerAnalysis(jdText) {
  * Observer to detect job changes on dynamic platforms like WaterlooWorks.
  */
 function setupJobDetectionObserver() {
+    // Polling is used instead of MutationObserver only because WaterlooWorks
+    // updates many views through internal UI state that is not always easy to diff.
     const checkAndTrigger = () => {
         if (isAnalyzing) return;
 
@@ -203,6 +227,9 @@ function cleanExportText(value) {
     return (value || '').toString().replace(/\s+/g, ' ').trim();
 }
 
+// ------------------------
+// Job table export helpers
+// ------------------------
 function getDataTable() {
     return document.querySelector('#dataViewerPlaceholder table.data-viewer-table')
         || document.querySelector('table.data-viewer-table');
@@ -292,6 +319,9 @@ async function waitForPageTransition(prevFirstId, timeoutMs = 12000) {
     return false;
 }
 
+// -----------------------------------------
+// Hiring history extraction (3 data sources)
+// -----------------------------------------
 function sectionByHeadingMatch(matchers) {
     const nodes = Array.from(document.querySelectorAll('h1,h2,h3,h4,h5,strong,b,label,span,p,div'));
     for (const node of nodes) {
@@ -622,6 +652,8 @@ function extractHiringHistoryFromWtrReport(report) {
 }
 
 async function enrichJobsWithHiringHistory(jobs) {
+    // Tokens are embedded in page scripts by WaterlooWorks and reused here
+    // to call internal POST endpoints for richer export data.
     const overviewToken = extractActionToken('getPostingOverview');
     const postingDataToken = extractActionToken('getPostingData');
     const wtrReportToken = extractActionToken('getWorkTermRatingReportJson');
@@ -657,6 +689,7 @@ async function enrichJobsWithHiringHistory(jobs) {
                 const fromWtrReport = extractHiringHistoryFromWtrReport(wtrReport);
 
                 historyMap[pid] = {
+                    // Priority order: explicit WTR report > structured postingData > HTML overview fallback.
                     hires_by_faculty: fromWtrReport.hires_by_faculty
                         || (!isEmptySection(fromPostingData.hires_by_faculty)
                         ? fromPostingData.hires_by_faculty
@@ -697,6 +730,9 @@ async function enrichJobsWithHiringHistory(jobs) {
     }));
 }
 
+// --------------------------------------
+// UI navigation helpers for WW job pages
+// --------------------------------------
 function isVisibleElement(el) {
     if (!el) return false;
     const style = window.getComputedStyle(el);
@@ -842,6 +878,7 @@ async function exportAllFilteredJobs(maxPages = 100) {
         await waitForPageTransition(firstId);
     }
 
+    // Final payload augments each exported row with hiring_history.
     const enriched = await enrichJobsWithHiringHistory(all);
     return { jobs: enriched };
 }

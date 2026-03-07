@@ -2,6 +2,9 @@
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'lib/pdf.worker.min.js';
 
 document.addEventListener('DOMContentLoaded', () => {
+  // Options page is the control plane for:
+  // 1) API key persistence, 2) resume PDF parsing, 3) filtered job export trigger.
+
   // DOM Elements
   const apiKeyInput = document.getElementById('apiKey');
   const saveApiBtn = document.getElementById('saveApiBtn');
@@ -89,6 +92,8 @@ document.addEventListener('DOMContentLoaded', () => {
     exportJobsBtn.addEventListener('click', async () => {
       if (!exportStatus) return;
 
+      // Export path:
+      // options.js -> content.js message -> crawl current WW filters -> download JSON.
       const originalLabel = exportJobsBtn.textContent;
       exportJobsBtn.disabled = true;
       exportJobsBtn.textContent = 'Exporting...';
@@ -162,6 +167,7 @@ document.addEventListener('DOMContentLoaded', () => {
         let numPages = pdf.numPages;
         let textPromises = [];
 
+        // Extract text page-by-page so large PDFs still resolve incrementally.
         for (let i = 1; i <= numPages; i++) {
           textPromises.push(
             pdf.getPage(i).then(page => {
@@ -175,7 +181,7 @@ document.addEventListener('DOMContentLoaded', () => {
         Promise.all(textPromises).then(pageTexts => {
           const fullText = pageTexts.join('\n\n');
           
-          // Save to storage
+          // Persist resume text for background.js prompt construction.
           chrome.storage.local.set({ resumeText: fullText }, function() {
             if (resumeTextPreview) {
                 resumeTextPreview.textContent = fullText.length > 500 
