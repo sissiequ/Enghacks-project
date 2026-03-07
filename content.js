@@ -198,3 +198,134 @@ if (document.readyState === 'complete' || document.readyState === 'interactive')
 } else {
     window.addEventListener('load', setupJobDetectionObserver);
 }
+
+function cleanExportText(value) {
+    return (value || '').toString().replace(/\s+/g, ' ').trim();
+}
+
+function getDataTable() {
+    return document.querySelector('#dataViewerPlaceholder table.data-viewer-table')
+        || document.querySelector('table.data-viewer-table');
+}
+
+function getHeaders(table) {
+    return Array.from(table.querySelectorAll('thead th')).map(th => cleanExportText(th.innerText).toLowerCase());
+}
+
+function headerIndex(headers, keys) {
+    for (let i = 0; i < headers.length; i += 1) {
+        const h = headers[i];
+        if (keys.some(k => h.includes(k))) return i;
+    }
+    return -1;
+}
+
+function extractRowsFromCurrentPage() {
+    const table = getDataTable();
+    if (!table) return [];
+
+    const headers = getHeaders(table);
+    const idxId = headerIndex(headers, ['id']);
+    const idxTitle = headerIndex(headers, ['job title', 'title', 'position']);
+    const idxOrg = headerIndex(headers, ['organization', 'employer']);
+    const idxDivision = headerIndex(headers, ['division']);
+    const idxOpenings = headerIndex(headers, ['openings']);
+    const idxCity = headerIndex(headers, ['city', 'location']);
+    const idxLevel = headerIndex(headers, ['level']);
+    const idxApps = headerIndex(headers, ['apps']);
+    const idxDeadline = headerIndex(headers, ['app deadline', 'deadline']);
+
+    const rows = Array.from(table.querySelectorAll('tbody tr'));
+    return rows.map(row => {
+        const checkboxId = cleanExportText(row.querySelector("input[name='dataViewerSelection']")?.value || '');
+        const thId = cleanExportText(row.querySelector("th[scope='row'] .overflow--ellipsis")?.innerText || '');
+        const idCell = checkboxId || thId;
+        const tdCells = Array.from(row.querySelectorAll('td')).map(td => cleanExportText(td.innerText));
+        const cells = [idCell, ...tdCells];
+        const at = i => (i >= 0 && i < cells.length ? cells[i] : '');
+
+        return {
+            posting_id: at(idxId) || idCell,
+            title: at(idxTitle),
+            organization: at(idxOrg),
+            division: at(idxDivision),
+            openings: at(idxOpenings),
+            city: at(idxCity),
+            level: at(idxLevel),
+            apps: at(idxApps),
+            app_deadline: at(idxDeadline),
+            raw_text: cleanExportText(cells.join(' | '))
+        };
+    });
+}
+
+function canGoNextPage() {
+    const nextBtn = document.querySelector(".pagination__link[aria-label*='Go to next page']");
+    if (!nextBtn) return false;
+    return !nextBtn.classList.contains('disabled') && nextBtn.getAttribute('aria-disabled') !== 'true';
+}
+
+function clickNextPage() {
+    const nextBtn = document.querySelector(".pagination__link[aria-label*='Go to next page']");
+    if (!nextBtn) return false;
+    if (nextBtn.classList.contains('disabled') || nextBtn.getAttribute('aria-disabled') === 'true') {
+        return false;
+    }
+    nextBtn.click();
+    return true;
+}
+
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function waitForPageTransition(prevFirstId, timeoutMs = 12000) {
+    const start = Date.now();
+    while (Date.now() - start < timeoutMs) {
+        await sleep(300);
+        const currentRows = extractRowsFromCurrentPage();
+        const firstId = currentRows[0]?.posting_id || '';
+        if (!prevFirstId && currentRows.length > 0) return true;
+        if (firstId && firstId !== prevFirstId) return true;
+        if (!canGoNextPage()) return true;
+    }
+    return false;
+}
+
+async function exportAllFilteredJobs(maxPages = 100) {
+    const all = [];
+    const seen = new Set();
+
+    for (let page = 1; page <= maxPages; page += 1) {
+        const rows = extractRowsFromCurrentPage();
+        if (!rows.length) break;
+
+        rows.forEach(row => {
+            const key = `${row.posting_id}::${row.title}`;
+            if (seen.has(key)) return;
+            seen.add(key);
+            all.push(row);
+        });
+
+        const firstId = rows[0]?.posting_id || '';
+        if (!clickNextPage()) break;
+        await waitForPageTransition(firstId);
+    }
+
+    return all;
+}
+
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    if (request.action !== 'EXPORT_FILTERED_JOBS') return;
+
+    (async () => {
+        try {
+            const jobs = await exportAllFilteredJobs(120);
+            sendResponse({ success: true, jobs });
+        } catch (error) {
+            sendResponse({ success: false, error: error.message || 'Export failed in content script.' });
+        }
+    })();
+
+    return true;
+});

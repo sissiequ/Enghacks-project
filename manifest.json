@@ -6,7 +6,9 @@
   "permissions": [
     "activeTab",
     "scripting",
-    "storage"
+    "storage",
+    "downloads",
+    "tabs"
   ],
   "host_permissions": [
     "https://waterlooworks.uwaterloo.ca/*",

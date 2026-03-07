@@ -11,6 +11,9 @@ const fileInput = document.getElementById('fileInput');
 const resumeTextPreview = document.getElementById('resumeTextPreview');
 const pdfStatus = document.getElementById('pdfStatus');
 
+const exportJobsBtn = document.getElementById('exportJobsBtn');
+const exportStatus = document.getElementById('exportStatus');
+
 // Load existing data
 chrome.storage.local.get(['geminiApiKey', 'resumeText'], function(result) {
   if (result.geminiApiKey) {
@@ -106,4 +109,89 @@ function handlePdfFile(file) {
   };
   
   fileReader.readAsArrayBuffer(file);
+}
+
+function setExportStatus(message, isError = false) {
+  if (!exportStatus) return;
+  exportStatus.style.display = 'block';
+  exportStatus.style.color = isError ? '#b00020' : '#0d652d';
+  exportStatus.textContent = message;
+}
+
+function formatTimestampForFilename() {
+  const d = new Date();
+  const pad = n => String(n).padStart(2, '0');
+  return `${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}_${pad(d.getHours())}${pad(d.getMinutes())}${pad(d.getSeconds())}`;
+}
+
+function queryActiveTab() {
+  return new Promise((resolve, reject) => {
+    chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
+      if (chrome.runtime.lastError) {
+        reject(new Error(chrome.runtime.lastError.message));
+        return;
+      }
+      resolve(tabs && tabs[0] ? tabs[0] : null);
+    });
+  });
+}
+
+function sendMessageToTab(tabId, message) {
+  return new Promise((resolve, reject) => {
+    chrome.tabs.sendMessage(tabId, message, response => {
+      if (chrome.runtime.lastError) {
+        reject(new Error(chrome.runtime.lastError.message));
+        return;
+      }
+      resolve(response);
+    });
+  });
+}
+
+if (exportJobsBtn) {
+  exportJobsBtn.addEventListener('click', async () => {
+    exportJobsBtn.disabled = true;
+    setExportStatus('Exporting jobs from current WaterlooWorks filter...');
+
+    try {
+      const activeTab = await queryActiveTab();
+      if (!activeTab || !activeTab.id) {
+        throw new Error('No active tab found.');
+      }
+
+      const tabUrl = activeTab.url || '';
+      if (!tabUrl.includes('waterlooworks.uwaterloo.ca')) {
+        throw new Error('Please switch to a WaterlooWorks tab first.');
+      }
+
+      const result = await sendMessageToTab(activeTab.id, { action: 'EXPORT_FILTERED_JOBS' });
+      if (!result || !result.success) {
+        throw new Error((result && result.error) ? result.error : 'Failed to export jobs.');
+      }
+
+      const payload = {
+        exported_at: new Date().toISOString(),
+        source_url: tabUrl,
+        total_jobs: Array.isArray(result.jobs) ? result.jobs.length : 0,
+        jobs: Array.isArray(result.jobs) ? result.jobs : []
+      };
+
+      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+      const blobUrl = URL.createObjectURL(blob);
+      const filename = `waterlooworks_jobs_${formatTimestampForFilename()}.json`;
+
+      chrome.downloads.download({ url: blobUrl, filename, saveAs: true }, () => {
+        if (chrome.runtime.lastError) {
+          setExportStatus(`Export failed: ${chrome.runtime.lastError.message}`, true);
+        } else {
+          setExportStatus(`Export complete: ${payload.total_jobs} jobs.`);
+        }
+        setTimeout(() => URL.revokeObjectURL(blobUrl), 10000);
+      });
+    } catch (error) {
+      setExportStatus(`Export failed: ${error.message}`, true);
+    } finally {
+      exportJobsBtn.disabled = false;
+    }
+  });
 }
