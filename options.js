@@ -16,9 +16,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const exportStatus = document.getElementById('exportStatus');
 
   // Load existing data
-  chrome.storage.local.get(['geminiApiKey', 'resumeText'], function(result) {
-    if (result.geminiApiKey && apiKeyInput) {
-      apiKeyInput.value = result.geminiApiKey;
+  chrome.storage.local.get(['apiKey', 'geminiApiKey', 'resumeText'], function(result) {
+    const savedKey = result.apiKey || result.geminiApiKey || '';
+    if (savedKey && apiKeyInput) {
+      apiKeyInput.value = savedKey;
     }
     if (result.resumeText && resumeTextPreview) {
       resumeTextPreview.textContent = result.resumeText.length > 500 
@@ -35,7 +36,8 @@ document.addEventListener('DOMContentLoaded', () => {
         alert("Please enter a valid API Key.");
         return;
       }
-      chrome.storage.local.set({ geminiApiKey: apiKey }, function() {
+      // Save both keys for backward compatibility with old/new background logic.
+      chrome.storage.local.set({ apiKey: apiKey, geminiApiKey: apiKey }, function() {
         if (apiStatus) {
           apiStatus.textContent = 'Settings saved successfully!';
           apiStatus.style.display = 'block';
