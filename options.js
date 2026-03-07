@@ -2,9 +2,9 @@
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'lib/pdf.worker.min.js';
 
 document.addEventListener('DOMContentLoaded', () => {
+  const WATERLOOWORKS_JOBS_URL = 'https://waterlooworks.uwaterloo.ca/myAccount/co-op/full/jobs.htm';
   // Options page is the control plane for:
   // 1) API key persistence, 2) resume PDF parsing, 3) filtered job export trigger.
-
   // DOM Elements
   const apiKeyInput = document.getElementById('apiKey');
   const saveApiBtn = document.getElementById('saveApiBtn');
@@ -17,6 +17,88 @@ document.addEventListener('DOMContentLoaded', () => {
   
   const exportJobsBtn = document.getElementById('exportJobsBtn');
   const exportStatus = document.getElementById('exportStatus');
+  const postingIdInput = document.getElementById('postingIdInput');
+  const openPostingBtn = document.getElementById('openPostingBtn');
+  const openApplyBtn = document.getElementById('openApplyBtn');
+  const openPostingStatus = document.getElementById('openPostingStatus');
+
+  function isJobsPageUrl(url) {
+    return typeof url === 'string' && url.includes('/myAccount/co-op/full/jobs.htm');
+  }
+
+  async function getWaterlooWorksTab() {
+    const [activeTab] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
+    if (activeTab?.id && isJobsPageUrl(activeTab.url || '')) {
+      return activeTab;
+    }
+    const candidates = await chrome.tabs.query({ url: '*://waterlooworks.uwaterloo.ca/*jobs.htm*' });
+    if (candidates.length > 0) return candidates[0];
+    return null;
+  }
+
+  async function waitForTabComplete(tabId, timeoutMs = 15000) {
+    const start = Date.now();
+    while (Date.now() - start < timeoutMs) {
+      const tab = await chrome.tabs.get(tabId);
+      if (tab?.status === 'complete') return;
+      await new Promise(resolve => setTimeout(resolve, 250));
+    }
+  }
+
+  async function sendMessageWithRetry(tabId, message, retries = 12, delayMs = 350) {
+    let lastError = null;
+    for (let i = 0; i < retries; i += 1) {
+      try {
+        return await chrome.tabs.sendMessage(tabId, message);
+      } catch (err) {
+        lastError = err;
+        const msg = String(err?.message || '');
+        if (msg.includes('Receiving end does not exist')) {
+          try {
+            await chrome.scripting.executeScript({
+              target: { tabId },
+              files: ['content.js']
+            });
+          } catch (_injectErr) {}
+        }
+        await new Promise(resolve => setTimeout(resolve, delayMs));
+      }
+    }
+    throw lastError || new Error('Failed to communicate with WaterlooWorks tab.');
+  }
+
+  async function sendMessageToWaterlooTab(message, options = {}) {
+    let tab = await getWaterlooWorksTab();
+    if (!tab || !tab.id) {
+      tab = await chrome.tabs.create({ url: WATERLOOWORKS_JOBS_URL, active: true });
+      await chrome.storage.local.set({
+        pendingWwAction: {
+          ...message,
+          createdAt: Date.now()
+        }
+      });
+      return { success: true, queued: true };
+    }
+
+    let response;
+    try {
+      response = await sendMessageWithRetry(tab.id, message);
+    } catch (_err) {
+      await chrome.storage.local.set({
+        pendingWwAction: {
+          ...message,
+          createdAt: Date.now()
+        }
+      });
+      response = { success: true, queued: true };
+    }
+
+    if (options.activateTab) {
+      await chrome.tabs.update(tab.id, { active: true });
+    }
+
+    return response;
+  }
 
   // Load existing data
   chrome.storage.local.get(['apiKey', 'geminiApiKey', 'resumeText'], function(result) {
@@ -102,17 +184,7 @@ document.addEventListener('DOMContentLoaded', () => {
       exportStatus.textContent = 'Collecting jobs from current WaterlooWorks filter...';
 
       try {
-        const [tab] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
-        if (!tab || !tab.id) {
-          throw new Error('No active tab found.');
-        }
-
-        const tabUrl = tab.url || '';
-        if (!tabUrl.includes('waterlooworks.uwaterloo.ca')) {
-          throw new Error('Please open WaterlooWorks jobs page first, then click export.');
-        }
-
-        const response = await chrome.tabs.sendMessage(tab.id, { action: 'EXPORT_FILTERED_JOBS' });
+        const response = await sendMessageToWaterlooTab({ action: 'EXPORT_FILTERED_JOBS' });
         if (!response || !response.success) {
           throw new Error(response?.error || 'Export failed.');
         }
@@ -142,6 +214,90 @@ document.addEventListener('DOMContentLoaded', () => {
       } finally {
         exportJobsBtn.disabled = false;
         exportJobsBtn.textContent = originalLabel;
+      }
+    });
+  }
+
+  if (openPostingBtn) {
+    openPostingBtn.addEventListener('click', async () => {
+      if (!openPostingStatus) return;
+      const postingId = (postingIdInput?.value || '').trim();
+      if (!postingId) {
+        openPostingStatus.style.display = 'block';
+        openPostingStatus.style.color = '#b00020';
+        openPostingStatus.textContent = 'Please enter a posting ID.';
+        return;
+      }
+
+      const originalLabel = openPostingBtn.textContent;
+      openPostingBtn.disabled = true;
+      openPostingBtn.textContent = 'Opening...';
+      openPostingStatus.style.display = 'block';
+      openPostingStatus.style.color = '#555';
+      openPostingStatus.textContent = `Searching posting ${postingId}...`;
+
+      try {
+        const response = await sendMessageToWaterlooTab({
+          action: 'OPEN_POSTING_BY_ID',
+          postingId
+        }, { activateTab: true });
+
+        if (!response || !response.success) {
+          throw new Error(response?.error || 'Could not open this posting.');
+        }
+
+        openPostingStatus.style.color = '#0d652d';
+        openPostingStatus.textContent = response.queued
+          ? `WaterlooWorks opened. Command queued for posting ${postingId}.`
+          : `Opened posting ${postingId}.`;
+      } catch (error) {
+        openPostingStatus.style.color = '#b00020';
+        openPostingStatus.textContent = error?.message || 'Open failed.';
+      } finally {
+        openPostingBtn.disabled = false;
+        openPostingBtn.textContent = originalLabel;
+      }
+    });
+  }
+
+  if (openApplyBtn) {
+    openApplyBtn.addEventListener('click', async () => {
+      if (!openPostingStatus) return;
+      const postingId = (postingIdInput?.value || '').trim();
+      if (!postingId) {
+        openPostingStatus.style.display = 'block';
+        openPostingStatus.style.color = '#b00020';
+        openPostingStatus.textContent = 'Please enter a posting ID.';
+        return;
+      }
+
+      const originalLabel = openApplyBtn.textContent;
+      openApplyBtn.disabled = true;
+      openApplyBtn.textContent = 'Opening...';
+      openPostingStatus.style.display = 'block';
+      openPostingStatus.style.color = '#555';
+      openPostingStatus.textContent = `Opening apply page for posting ${postingId}...`;
+
+      try {
+        const response = await sendMessageToWaterlooTab({
+          action: 'OPEN_APPLY_BY_ID',
+          postingId
+        }, { activateTab: true });
+
+        if (!response || !response.success) {
+          throw new Error(response?.error || 'Could not open apply page for this posting.');
+        }
+
+        openPostingStatus.style.color = '#0d652d';
+        openPostingStatus.textContent = response.queued
+          ? `WaterlooWorks opened. Apply command queued for posting ${postingId}.`
+          : `Opened apply page for posting ${postingId}.`;
+      } catch (error) {
+        openPostingStatus.style.color = '#b00020';
+        openPostingStatus.textContent = error?.message || 'Open apply failed.';
+      } finally {
+        openApplyBtn.disabled = false;
+        openApplyBtn.textContent = originalLabel;
       }
     });
   }

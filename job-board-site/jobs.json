@@ -1,0 +1,1901 @@
+[
+  {
+    "posting_id": "460878",
+    "title": "Software Engineering Co-Op",
+    "organization": "Arius Technology",
+    "division": "Divisional Office",
+    "openings": "1",
+    "city": "Richmond",
+    "level": "Intermediate, Senior",
+    "apps": "55",
+    "app_deadline": "Mar 11, 2026 9:00 AM",
+    "raw_text": "460878 | Software Engineering Co-Op | Arius Technology | Divisional Office | 1 | Richmond | Intermediate, Senior | 55 | Mar 11, 2026 9:00 AM",
+    "hiring_history": {
+      "hires_by_faculty": null,
+      "hires_by_student_work_term_number": null,
+      "most_frequently_hired_programs": null
+    }
+  },
+  {
+    "posting_id": "460869",
+    "title": "Field Technician Co-op",
+    "organization": "Club Support Inc",
+    "division": "Divisional Office",
+    "openings": "1",
+    "city": "Concord",
+    "level": "Senior",
+    "apps": "5",
+    "app_deadline": "Mar 11, 2026 9:00 AM",
+    "raw_text": "460869 | Field Technician Co-op | Club Support Inc | Divisional Office | 1 | Concord | Senior | 5 | Mar 11, 2026 9:00 AM",
+    "hiring_history": {
+      "hires_by_faculty": {
+        "type": "pieChart",
+        "title": "Hires by Faculty<br>Club Support Inc - Divisional Office",
+        "description": "",
+        "data": [
+          {
+            "name": "Engineering",
+            "y": "100"
+          }
+        ]
+      },
+      "hires_by_student_work_term_number": {
+        "type": "pieChart",
+        "title": "Hires by Student Work Term Number<br>Club Support Inc - Divisional Office",
+        "description": "",
+        "data": [
+          {
+            "name": "Sixth +",
+            "y": "100"
+          }
+        ]
+      },
+      "most_frequently_hired_programs": {
+        "type": "barChart",
+        "title": "Most Frequently Hired Programs - Club Support Inc - Divisional Office",
+        "description": "",
+        "series": [
+          {
+            "data": [
+              1
+            ],
+            "name": "Hires"
+          }
+        ],
+        "categories": [
+          "Computer Engineering"
+        ]
+      }
+    }
+  },
+  {
+    "posting_id": "460797",
+    "title": "R&D Engineering Co-op",
+    "organization": "Vital Biosciences Inc",
+    "division": "Divisional Office",
+    "openings": "1",
+    "city": "Oakville",
+    "level": "Intermediate, Senior",
+    "apps": "71",
+    "app_deadline": "Mar 11, 2026 9:00 AM",
+    "raw_text": "460797 | R&D Engineering Co-op | Vital Biosciences Inc | Divisional Office | 1 | Oakville | Intermediate, Senior | 71 | Mar 11, 2026 9:00 AM",
+    "hiring_history": {
+      "hires_by_faculty": {
+        "type": "pieChart",
+        "title": "Hires by Faculty<br>Vital Biosciences Inc - Divisional Office",
+        "description": "",
+        "data": [
+          {
+            "name": "Engineering",
+            "y": "77"
+          },
+          {
+            "name": "Health",
+            "y": "5"
+          },
+          {
+            "name": "Science",
+            "y": "18"
+          }
+        ]
+      },
+      "hires_by_student_work_term_number": {
+        "type": "pieChart",
+        "title": "Hires by Student Work Term Number<br>Vital Biosciences Inc - Divisional Office",
+        "description": "",
+        "data": [
+          {
+            "name": "First",
+            "y": "3"
+          },
+          {
+            "name": "Second",
+            "y": "15"
+          },
+          {
+            "name": "Third",
+            "y": "13"
+          },
+          {
+            "name": "Fourth",
+            "y": "15"
+          },
+          {
+            "name": "Fifth",
+            "y": "33"
+          },
+          {
+            "name": "Sixth +",
+            "y": "21"
+          }
+        ]
+      },
+      "most_frequently_hired_programs": {
+        "type": "barChart",
+        "title": "Most Frequently Hired Programs - Vital Biosciences Inc - Divisional Office",
+        "description": "",
+        "series": [
+          {
+            "data": [
+              11,
+              8,
+              5,
+              5,
+              4,
+              3,
+              2,
+              1
+            ],
+            "name": "Hires"
+          }
+        ],
+        "categories": [
+          "Biomedical Engineering",
+          "Nanotechnology Engineering",
+          "Mechanical Engineering",
+          "Mechatronics Engineering",
+          "Chemistry",
+          "Biology",
+          "Kinesiology",
+          "Chemical Engineering"
+        ]
+      }
+    }
+  },
+  {
+    "posting_id": "460773",
+    "title": "Customer Support Agent",
+    "organization": "Windscribe Limited",
+    "division": "Divisional Office",
+    "openings": "1",
+    "city": "Toronto",
+    "level": "Junior, Intermediate, Senior",
+    "apps": "48",
+    "app_deadline": "Mar 10, 2026 9:00 AM",
+    "raw_text": "460773 | Customer Support Agent | Windscribe Limited | Divisional Office | 1 | Toronto | Junior, Intermediate, Senior | 48 | Mar 10, 2026 9:00 AM",
+    "hiring_history": {
+      "hires_by_faculty": {
+        "type": "pieChart",
+        "title": "Hires by Faculty<br>Windscribe Limited - Divisional Office",
+        "description": "",
+        "data": [
+          {
+            "name": "Engineering",
+            "y": "60"
+          },
+          {
+            "name": "Mathematics",
+            "y": "40"
+          }
+        ]
+      },
+      "hires_by_student_work_term_number": {
+        "type": "pieChart",
+        "title": "Hires by Student Work Term Number<br>Windscribe Limited - Divisional Office",
+        "description": "",
+        "data": [
+          {
+            "name": "First",
+            "y": "60"
+          },
+          {
+            "name": "Second",
+            "y": "20"
+          },
+          {
+            "name": "Fourth",
+            "y": "20"
+          }
+        ]
+      },
+      "most_frequently_hired_programs": {
+        "type": "barChart",
+        "title": "Most Frequently Hired Programs - Windscribe Limited - Divisional Office",
+        "description": "",
+        "series": [
+          {
+            "data": [
+              2,
+              1,
+              1,
+              1
+            ],
+            "name": "Hires"
+          }
+        ],
+        "categories": [
+          "Computer Science/BCS",
+          "Computer Engineering",
+          "Electrical Engineering",
+          "Mechatronics Engineering"
+        ]
+      }
+    }
+  },
+  {
+    "posting_id": "460770",
+    "title": "Application Development Intern",
+    "organization": "Food for Good Inc",
+    "division": "Divisional Office",
+    "openings": "1",
+    "city": "Niagara falls",
+    "level": "Intermediate, Senior",
+    "apps": "103",
+    "app_deadline": "Mar 10, 2026 9:00 AM",
+    "raw_text": "460770 | Application Development Intern | Food for Good Inc | Divisional Office | 1 | Niagara falls | Intermediate, Senior | 103 | Mar 10, 2026 9:00 AM",
+    "hiring_history": {
+      "hires_by_faculty": {
+        "type": "pieChart",
+        "title": "Hires by Faculty<br>Food for Good Inc - Divisional Office",
+        "description": "",
+        "data": [
+          {
+            "name": "Engineering",
+            "y": "50"
+          },
+          {
+            "name": "Health",
+            "y": "25"
+          },
+          {
+            "name": "Mathematics",
+            "y": "25"
+          }
+        ]
+      },
+      "hires_by_student_work_term_number": {
+        "type": "pieChart",
+        "title": "Hires by Student Work Term Number<br>Food for Good Inc - Divisional Office",
+        "description": "",
+        "data": [
+          {
+            "name": "First",
+            "y": "33"
+          },
+          {
+            "name": "Second",
+            "y": "33"
+          },
+          {
+            "name": "Third",
+            "y": "8"
+          },
+          {
+            "name": "Fourth",
+            "y": "17"
+          },
+          {
+            "name": "Sixth +",
+            "y": "8"
+          }
+        ]
+      },
+      "most_frequently_hired_programs": {
+        "type": "barChart",
+        "title": "Most Frequently Hired Programs - Food for Good Inc - Divisional Office",
+        "description": "",
+        "series": [
+          {
+            "data": [
+              3,
+              2,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            "name": "Hires"
+          }
+        ],
+        "categories": [
+          "Chemical Engineering",
+          "Kinesiology",
+          "Architecture",
+          "Computer Engineering",
+          "Computer Science/BCS",
+          "Computing and Financial Management",
+          "Double Degree (BBA/BCS)",
+          "Public Health",
+          "Systems Design Engineering"
+        ]
+      }
+    }
+  },
+  {
+    "posting_id": "460731",
+    "title": "Process Engineering Specialist Co-op",
+    "organization": "Purolator Inc",
+    "division": "Corporate",
+    "openings": "1",
+    "city": "Mississauga",
+    "level": "Intermediate, Senior",
+    "apps": "211",
+    "app_deadline": "Mar 10, 2026 9:00 AM",
+    "raw_text": "460731 | Process Engineering Specialist Co-op | Purolator Inc | Corporate | 1 | Mississauga | Intermediate, Senior | 211 | Mar 10, 2026 9:00 AM",
+    "hiring_history": {
+      "hires_by_faculty": {
+        "type": "pieChart",
+        "title": "Hires by Faculty<br>Purolator Inc - Corporate",
+        "description": "",
+        "data": [
+          {
+            "name": "Arts",
+            "y": "3"
+          },
+          {
+            "name": "Engineering",
+            "y": "44"
+          },
+          {
+            "name": "Environment",
+            "y": "18"
+          },
+          {
+            "name": "Mathematics",
+            "y": "33"
+          },
+          {
+            "name": "Science",
+            "y": "2"
+          }
+        ]
+      },
+      "hires_by_student_work_term_number": {
+        "type": "pieChart",
+        "title": "Hires by Student Work Term Number<br>Purolator Inc - Corporate",
+        "description": "",
+        "data": [
+          {
+            "name": "First",
+            "y": "8"
+          },
+          {
+            "name": "Second",
+            "y": "14"
+          },
+          {
+            "name": "Third",
+            "y": "14"
+          },
+          {
+            "name": "Fourth",
+            "y": "26"
+          },
+          {
+            "name": "Fifth",
+            "y": "19"
+          },
+          {
+            "name": "Sixth +",
+            "y": "18"
+          }
+        ]
+      },
+      "most_frequently_hired_programs": {
+        "type": "barChart",
+        "title": "Most Frequently Hired Programs - Purolator Inc - Corporate",
+        "description": "",
+        "series": [
+          {
+            "data": [
+              14,
+              13,
+              11,
+              10,
+              10,
+              9,
+              7,
+              5,
+              5,
+              4
+            ],
+            "name": "Hires"
+          }
+        ],
+        "categories": [
+          "Management Engineering",
+          "Statistics",
+          "Computer Science/BCS",
+          "Geomatics",
+          "Systems Design Engineering",
+          "Computer Engineering",
+          "Environment & Business",
+          "Mechatronics Engineering",
+          "Nanotechnology Engineering",
+          "Financial Analysis & Risk Management"
+        ]
+      }
+    }
+  },
+  {
+    "posting_id": "460725",
+    "title": "check_circle Software Test Co-op",
+    "organization": "Intellijoint Surgical Inc",
+    "division": "Divisional Office",
+    "openings": "1",
+    "city": "Kitchener",
+    "level": "Junior, Intermediate, Senior",
+    "apps": "364",
+    "app_deadline": "Mar 10, 2026 9:00 AM",
+    "raw_text": "460725 | check_circle Software Test Co-op | Intellijoint Surgical Inc | Divisional Office | 1 | Kitchener | Junior, Intermediate, Senior | 364 | Mar 10, 2026 9:00 AM",
+    "hiring_history": {
+      "hires_by_faculty": {
+        "type": "pieChart",
+        "title": "Hires by Faculty<br>Intellijoint Surgical Inc - Divisional Office",
+        "description": "",
+        "data": [
+          {
+            "name": "Arts",
+            "y": "3"
+          },
+          {
+            "name": "Engineering",
+            "y": "82"
+          },
+          {
+            "name": "Health",
+            "y": "9"
+          },
+          {
+            "name": "Mathematics",
+            "y": "6"
+          }
+        ]
+      },
+      "hires_by_student_work_term_number": {
+        "type": "pieChart",
+        "title": "Hires by Student Work Term Number<br>Intellijoint Surgical Inc - Divisional Office",
+        "description": "",
+        "data": [
+          {
+            "name": "First",
+            "y": "6"
+          },
+          {
+            "name": "Second",
+            "y": "18"
+          },
+          {
+            "name": "Third",
+            "y": "12"
+          },
+          {
+            "name": "Fourth",
+            "y": "21"
+          },
+          {
+            "name": "Fifth",
+            "y": "24"
+          },
+          {
+            "name": "Sixth +",
+            "y": "21"
+          }
+        ]
+      },
+      "most_frequently_hired_programs": {
+        "type": "barChart",
+        "title": "Most Frequently Hired Programs - Intellijoint Surgical Inc - Divisional Office",
+        "description": "",
+        "series": [
+          {
+            "data": [
+              20,
+              2,
+              2,
+              2,
+              2,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            "name": "Hires"
+          }
+        ],
+        "categories": [
+          "Biomedical Engineering",
+          "Kinesiology",
+          "Mechatronics Engineering",
+          "Nanotechnology Engineering",
+          "Systems Design Engineering",
+          "Computer Engineering",
+          "Computer Science/BCS",
+          "Computer Science/BMath",
+          "Health Sciences",
+          "Legal Studies"
+        ]
+      }
+    }
+  },
+  {
+    "posting_id": "460672",
+    "title": "Software Engineering Intern",
+    "organization": "Suger Inc",
+    "division": "Divisional Office",
+    "openings": "2",
+    "city": "Vancouver",
+    "level": "Senior",
+    "apps": "90",
+    "app_deadline": "Mar 11, 2026 11:59 PM",
+    "raw_text": "460672 | Software Engineering Intern | Suger Inc | Divisional Office | 2 | Vancouver | Senior | 90 | Mar 11, 2026 11:59 PM",
+    "hiring_history": {
+      "hires_by_faculty": null,
+      "hires_by_student_work_term_number": null,
+      "most_frequently_hired_programs": null
+    }
+  },
+  {
+    "posting_id": "460668",
+    "title": "Computer Engineering",
+    "organization": "Carehawk Inc",
+    "division": "Divisional Office",
+    "openings": "1",
+    "city": "Kitchener",
+    "level": "Intermediate, Senior",
+    "apps": "41",
+    "app_deadline": "Mar 10, 2026 9:00 AM",
+    "raw_text": "460668 | Computer Engineering | Carehawk Inc | Divisional Office | 1 | Kitchener | Intermediate, Senior | 41 | Mar 10, 2026 9:00 AM",
+    "hiring_history": {
+      "hires_by_faculty": {
+        "type": "pieChart",
+        "title": "Hires by Faculty<br>Carehawk Inc - Divisional Office",
+        "description": "",
+        "data": [
+          {
+            "name": "Engineering",
+            "y": "100"
+          }
+        ]
+      },
+      "hires_by_student_work_term_number": {
+        "type": "pieChart",
+        "title": "Hires by Student Work Term Number<br>Carehawk Inc - Divisional Office",
+        "description": "",
+        "data": [
+          {
+            "name": "Second",
+            "y": "100"
+          }
+        ]
+      },
+      "most_frequently_hired_programs": {
+        "type": "barChart",
+        "title": "Most Frequently Hired Programs - Carehawk Inc - Divisional Office",
+        "description": "",
+        "series": [
+          {
+            "data": [
+              1
+            ],
+            "name": "Hires"
+          }
+        ],
+        "categories": [
+          "Electrical Engineering"
+        ]
+      }
+    }
+  },
+  {
+    "posting_id": "460648",
+    "title": "check_circle Software Developer - Innovation Office",
+    "organization": "Baycrest Health Science",
+    "division": "Baycrest Innovation Office",
+    "openings": "1",
+    "city": "Toronto",
+    "level": "Junior",
+    "apps": "348",
+    "app_deadline": "Mar 10, 2026 9:00 AM",
+    "raw_text": "460648 | check_circle Software Developer - Innovation Office | Baycrest Health Science | Baycrest Innovation Office | 1 | Toronto | Junior | 348 | Mar 10, 2026 9:00 AM",
+    "hiring_history": {
+      "hires_by_faculty": {
+        "type": "pieChart",
+        "title": "Hires by Faculty<br>Baycrest Health Science - Baycrest Innovation Office",
+        "description": "",
+        "data": [
+          {
+            "name": "Engineering",
+            "y": "100"
+          }
+        ]
+      },
+      "hires_by_student_work_term_number": {
+        "type": "pieChart",
+        "title": "Hires by Student Work Term Number<br>Baycrest Health Science - Baycrest Innovation Office",
+        "description": "",
+        "data": [
+          {
+            "name": "Second",
+            "y": "67"
+          },
+          {
+            "name": "Third",
+            "y": "33"
+          }
+        ]
+      },
+      "most_frequently_hired_programs": {
+        "type": "barChart",
+        "title": "Most Frequently Hired Programs - Baycrest Health Science - Baycrest Innovation Office",
+        "description": "",
+        "series": [
+          {
+            "data": [
+              1,
+              1,
+              1
+            ],
+            "name": "Hires"
+          }
+        ],
+        "categories": [
+          "Computer Engineering",
+          "Software Engineering",
+          "Systems Design Engineering"
+        ]
+      }
+    }
+  },
+  {
+    "posting_id": "460645",
+    "title": "SRE Software Developer Co-op",
+    "organization": "TextNow",
+    "division": "Divisional Office",
+    "openings": "1",
+    "city": "Waterloo",
+    "level": "Intermediate, Senior",
+    "apps": "315",
+    "app_deadline": "Mar 9, 2026 9:00 AM",
+    "raw_text": "460645 | SRE Software Developer Co-op | TextNow | Divisional Office | 1 | Waterloo | Intermediate, Senior | 315 | Mar 9, 2026 9:00 AM",
+    "hiring_history": {
+      "hires_by_faculty": {
+        "type": "pieChart",
+        "title": "Hires by Faculty<br>TextNow - Divisional Office",
+        "description": "",
+        "data": [
+          {
+            "name": "Arts",
+            "y": "8"
+          },
+          {
+            "name": "Engineering",
+            "y": "50"
+          },
+          {
+            "name": "Mathematics",
+            "y": "42"
+          }
+        ]
+      },
+      "hires_by_student_work_term_number": {
+        "type": "pieChart",
+        "title": "Hires by Student Work Term Number<br>TextNow - Divisional Office",
+        "description": "",
+        "data": [
+          {
+            "name": "First",
+            "y": "8"
+          },
+          {
+            "name": "Second",
+            "y": "25"
+          },
+          {
+            "name": "Third",
+            "y": "17"
+          },
+          {
+            "name": "Fourth",
+            "y": "25"
+          },
+          {
+            "name": "Sixth +",
+            "y": "25"
+          }
+        ]
+      },
+      "most_frequently_hired_programs": {
+        "type": "barChart",
+        "title": "Most Frequently Hired Programs - TextNow - Divisional Office",
+        "description": "",
+        "series": [
+          {
+            "data": [
+              4,
+              2,
+              2,
+              1,
+              1,
+              1,
+              1
+            ],
+            "name": "Hires"
+          }
+        ],
+        "categories": [
+          "Computer Engineering",
+          "Computer Science/BCS",
+          "Systems Design Engineering",
+          "Computational Mathematics",
+          "Data Science/BMath",
+          "Double Degree (BBA/BCS)",
+          "Global Business & Digital Arts"
+        ]
+      }
+    }
+  },
+  {
+    "posting_id": "460644",
+    "title": "Electronics Engineering Assistant",
+    "organization": "KA Imaging Inc",
+    "division": "Divisional Office",
+    "openings": "1",
+    "city": "Waterloo",
+    "level": "Junior, Intermediate, Senior",
+    "apps": "201",
+    "app_deadline": "Mar 10, 2026 9:00 AM",
+    "raw_text": "460644 | Electronics Engineering Assistant | KA Imaging Inc | Divisional Office | 1 | Waterloo | Junior, Intermediate, Senior | 201 | Mar 10, 2026 9:00 AM",
+    "hiring_history": {
+      "hires_by_faculty": {
+        "type": "pieChart",
+        "title": "Hires by Faculty<br>KA Imaging Inc - Divisional Office",
+        "description": "",
+        "data": [
+          {
+            "name": "Engineering",
+            "y": "70"
+          },
+          {
+            "name": "Mathematics",
+            "y": "30"
+          }
+        ]
+      },
+      "hires_by_student_work_term_number": {
+        "type": "pieChart",
+        "title": "Hires by Student Work Term Number<br>KA Imaging Inc - Divisional Office",
+        "description": "",
+        "data": [
+          {
+            "name": "First",
+            "y": "9"
+          },
+          {
+            "name": "Second",
+            "y": "35"
+          },
+          {
+            "name": "Third",
+            "y": "22"
+          },
+          {
+            "name": "Fourth",
+            "y": "9"
+          },
+          {
+            "name": "Fifth",
+            "y": "13"
+          },
+          {
+            "name": "Sixth +",
+            "y": "13"
+          }
+        ]
+      },
+      "most_frequently_hired_programs": {
+        "type": "barChart",
+        "title": "Most Frequently Hired Programs - KA Imaging Inc - Divisional Office",
+        "description": "",
+        "series": [
+          {
+            "data": [
+              6,
+              4,
+              3,
+              3,
+              2,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            "name": "Hires"
+          }
+        ],
+        "categories": [
+          "Biomedical Engineering",
+          "Honours Mathematics",
+          "Computer Engineering",
+          "Mechatronics Engineering",
+          "Electrical Engineering",
+          "Computational Mathematics",
+          "Computer Science/BCS",
+          "Data Science/BMath",
+          "Nanotechnology Engineering",
+          "Software Engineering"
+        ]
+      }
+    }
+  },
+  {
+    "posting_id": "460642",
+    "title": "check_circle Backend Platform Software Developer Co-op",
+    "organization": "TextNow",
+    "division": "Divisional Office",
+    "openings": "1",
+    "city": "Waterloo",
+    "level": "Intermediate, Senior",
+    "apps": "387",
+    "app_deadline": "Mar 9, 2026 9:00 AM",
+    "raw_text": "460642 | check_circle Backend Platform Software Developer Co-op | TextNow | Divisional Office | 1 | Waterloo | Intermediate, Senior | 387 | Mar 9, 2026 9:00 AM",
+    "hiring_history": {
+      "hires_by_faculty": {
+        "type": "pieChart",
+        "title": "Hires by Faculty<br>TextNow - Divisional Office",
+        "description": "",
+        "data": [
+          {
+            "name": "Arts",
+            "y": "8"
+          },
+          {
+            "name": "Engineering",
+            "y": "50"
+          },
+          {
+            "name": "Mathematics",
+            "y": "42"
+          }
+        ]
+      },
+      "hires_by_student_work_term_number": {
+        "type": "pieChart",
+        "title": "Hires by Student Work Term Number<br>TextNow - Divisional Office",
+        "description": "",
+        "data": [
+          {
+            "name": "First",
+            "y": "8"
+          },
+          {
+            "name": "Second",
+            "y": "25"
+          },
+          {
+            "name": "Third",
+            "y": "17"
+          },
+          {
+            "name": "Fourth",
+            "y": "25"
+          },
+          {
+            "name": "Sixth +",
+            "y": "25"
+          }
+        ]
+      },
+      "most_frequently_hired_programs": {
+        "type": "barChart",
+        "title": "Most Frequently Hired Programs - TextNow - Divisional Office",
+        "description": "",
+        "series": [
+          {
+            "data": [
+              4,
+              2,
+              2,
+              1,
+              1,
+              1,
+              1
+            ],
+            "name": "Hires"
+          }
+        ],
+        "categories": [
+          "Computer Engineering",
+          "Computer Science/BCS",
+          "Systems Design Engineering",
+          "Computational Mathematics",
+          "Data Science/BMath",
+          "Double Degree (BBA/BCS)",
+          "Global Business & Digital Arts"
+        ]
+      }
+    }
+  },
+  {
+    "posting_id": "460625",
+    "title": "Fullstack Software Developer Co-op",
+    "organization": "TextNow",
+    "division": "Divisional Office",
+    "openings": "1",
+    "city": "Waterloo",
+    "level": "Intermediate, Senior",
+    "apps": "436",
+    "app_deadline": "Mar 9, 2026 9:00 AM",
+    "raw_text": "460625 | Fullstack Software Developer Co-op | TextNow | Divisional Office | 1 | Waterloo | Intermediate, Senior | 436 | Mar 9, 2026 9:00 AM",
+    "hiring_history": {
+      "hires_by_faculty": {
+        "type": "pieChart",
+        "title": "Hires by Faculty<br>TextNow - Divisional Office",
+        "description": "",
+        "data": [
+          {
+            "name": "Arts",
+            "y": "8"
+          },
+          {
+            "name": "Engineering",
+            "y": "50"
+          },
+          {
+            "name": "Mathematics",
+            "y": "42"
+          }
+        ]
+      },
+      "hires_by_student_work_term_number": {
+        "type": "pieChart",
+        "title": "Hires by Student Work Term Number<br>TextNow - Divisional Office",
+        "description": "",
+        "data": [
+          {
+            "name": "First",
+            "y": "8"
+          },
+          {
+            "name": "Second",
+            "y": "25"
+          },
+          {
+            "name": "Third",
+            "y": "17"
+          },
+          {
+            "name": "Fourth",
+            "y": "25"
+          },
+          {
+            "name": "Sixth +",
+            "y": "25"
+          }
+        ]
+      },
+      "most_frequently_hired_programs": {
+        "type": "barChart",
+        "title": "Most Frequently Hired Programs - TextNow - Divisional Office",
+        "description": "",
+        "series": [
+          {
+            "data": [
+              4,
+              2,
+              2,
+              1,
+              1,
+              1,
+              1
+            ],
+            "name": "Hires"
+          }
+        ],
+        "categories": [
+          "Computer Engineering",
+          "Computer Science/BCS",
+          "Systems Design Engineering",
+          "Computational Mathematics",
+          "Data Science/BMath",
+          "Double Degree (BBA/BCS)",
+          "Global Business & Digital Arts"
+        ]
+      }
+    }
+  },
+  {
+    "posting_id": "460613",
+    "title": "Supply Chain Excellence Co-op",
+    "organization": "Mondelez International",
+    "division": "Mondelez Canada Inc",
+    "openings": "1",
+    "city": "Toronto",
+    "level": "Intermediate, Senior",
+    "apps": "60",
+    "app_deadline": "Mar 9, 2026 9:00 AM",
+    "raw_text": "460613 | Supply Chain Excellence Co-op | Mondelez International | Mondelez Canada Inc | 1 | Toronto | Intermediate, Senior | 60 | Mar 9, 2026 9:00 AM",
+    "hiring_history": {
+      "hires_by_faculty": {
+        "type": "pieChart",
+        "title": "Hires by Faculty<br>Mondelez International - Mondelez Canada Inc",
+        "description": "",
+        "data": [
+          {
+            "name": "Engineering",
+            "y": "63"
+          },
+          {
+            "name": "Mathematics",
+            "y": "26"
+          },
+          {
+            "name": "Science",
+            "y": "11"
+          }
+        ]
+      },
+      "hires_by_student_work_term_number": {
+        "type": "pieChart",
+        "title": "Hires by Student Work Term Number<br>Mondelez International - Mondelez Canada Inc",
+        "description": "",
+        "data": [
+          {
+            "name": "First",
+            "y": "11"
+          },
+          {
+            "name": "Second",
+            "y": "26"
+          },
+          {
+            "name": "Third",
+            "y": "30"
+          },
+          {
+            "name": "Fourth",
+            "y": "11"
+          },
+          {
+            "name": "Fifth",
+            "y": "15"
+          },
+          {
+            "name": "Sixth +",
+            "y": "7"
+          }
+        ]
+      },
+      "most_frequently_hired_programs": {
+        "type": "barChart",
+        "title": "Most Frequently Hired Programs - Mondelez International - Mondelez Canada Inc",
+        "description": "",
+        "series": [
+          {
+            "data": [
+              8,
+              4,
+              3,
+              3,
+              3,
+              2,
+              1,
+              1,
+              1,
+              1
+            ],
+            "name": "Hires"
+          }
+        ],
+        "categories": [
+          "Chemical Engineering",
+          "Mechatronics Engineering",
+          "Mathematics/Business Administration",
+          "Mechanical and Mechatronics Engineering - Masters",
+          "Science & Business",
+          "Honours Mathematics",
+          "Chemical Engineering - Masters",
+          "Combinatorics & Optimization",
+          "Mathematical Finance",
+          "Nanotechnology Engineering"
+        ]
+      }
+    }
+  },
+  {
+    "posting_id": "460608",
+    "title": "Supply Chain Excellence Co-op",
+    "organization": "Mondelez International",
+    "division": "Mondelez Canada Inc",
+    "openings": "1",
+    "city": "East York",
+    "level": "Intermediate, Senior",
+    "apps": "51",
+    "app_deadline": "Mar 9, 2026 9:00 AM",
+    "raw_text": "460608 | Supply Chain Excellence Co-op | Mondelez International | Mondelez Canada Inc | 1 | East York | Intermediate, Senior | 51 | Mar 9, 2026 9:00 AM",
+    "hiring_history": {
+      "hires_by_faculty": {
+        "type": "pieChart",
+        "title": "Hires by Faculty<br>Mondelez International - Mondelez Canada Inc",
+        "description": "",
+        "data": [
+          {
+            "name": "Engineering",
+            "y": "63"
+          },
+          {
+            "name": "Mathematics",
+            "y": "26"
+          },
+          {
+            "name": "Science",
+            "y": "11"
+          }
+        ]
+      },
+      "hires_by_student_work_term_number": {
+        "type": "pieChart",
+        "title": "Hires by Student Work Term Number<br>Mondelez International - Mondelez Canada Inc",
+        "description": "",
+        "data": [
+          {
+            "name": "First",
+            "y": "11"
+          },
+          {
+            "name": "Second",
+            "y": "26"
+          },
+          {
+            "name": "Third",
+            "y": "30"
+          },
+          {
+            "name": "Fourth",
+            "y": "11"
+          },
+          {
+            "name": "Fifth",
+            "y": "15"
+          },
+          {
+            "name": "Sixth +",
+            "y": "7"
+          }
+        ]
+      },
+      "most_frequently_hired_programs": {
+        "type": "barChart",
+        "title": "Most Frequently Hired Programs - Mondelez International - Mondelez Canada Inc",
+        "description": "",
+        "series": [
+          {
+            "data": [
+              8,
+              4,
+              3,
+              3,
+              3,
+              2,
+              1,
+              1,
+              1,
+              1
+            ],
+            "name": "Hires"
+          }
+        ],
+        "categories": [
+          "Chemical Engineering",
+          "Mechatronics Engineering",
+          "Mathematics/Business Administration",
+          "Mechanical and Mechatronics Engineering - Masters",
+          "Science & Business",
+          "Honours Mathematics",
+          "Chemical Engineering - Masters",
+          "Combinatorics & Optimization",
+          "Mathematical Finance",
+          "Nanotechnology Engineering"
+        ]
+      }
+    }
+  },
+  {
+    "posting_id": "460596",
+    "title": "Maintenance Co-op",
+    "organization": "Mondelez International",
+    "division": "Mondelez Canada Inc",
+    "openings": "1",
+    "city": "Hamilton",
+    "level": "Intermediate, Senior",
+    "apps": "114",
+    "app_deadline": "Mar 9, 2026 9:00 AM",
+    "raw_text": "460596 | Maintenance Co-op | Mondelez International | Mondelez Canada Inc | 1 | Hamilton | Intermediate, Senior | 114 | Mar 9, 2026 9:00 AM",
+    "hiring_history": {
+      "hires_by_faculty": {
+        "type": "pieChart",
+        "title": "Hires by Faculty<br>Mondelez International - Mondelez Canada Inc",
+        "description": "",
+        "data": [
+          {
+            "name": "Engineering",
+            "y": "63"
+          },
+          {
+            "name": "Mathematics",
+            "y": "26"
+          },
+          {
+            "name": "Science",
+            "y": "11"
+          }
+        ]
+      },
+      "hires_by_student_work_term_number": {
+        "type": "pieChart",
+        "title": "Hires by Student Work Term Number<br>Mondelez International - Mondelez Canada Inc",
+        "description": "",
+        "data": [
+          {
+            "name": "First",
+            "y": "11"
+          },
+          {
+            "name": "Second",
+            "y": "26"
+          },
+          {
+            "name": "Third",
+            "y": "30"
+          },
+          {
+            "name": "Fourth",
+            "y": "11"
+          },
+          {
+            "name": "Fifth",
+            "y": "15"
+          },
+          {
+            "name": "Sixth +",
+            "y": "7"
+          }
+        ]
+      },
+      "most_frequently_hired_programs": {
+        "type": "barChart",
+        "title": "Most Frequently Hired Programs - Mondelez International - Mondelez Canada Inc",
+        "description": "",
+        "series": [
+          {
+            "data": [
+              8,
+              4,
+              3,
+              3,
+              3,
+              2,
+              1,
+              1,
+              1,
+              1
+            ],
+            "name": "Hires"
+          }
+        ],
+        "categories": [
+          "Chemical Engineering",
+          "Mechatronics Engineering",
+          "Mathematics/Business Administration",
+          "Mechanical and Mechatronics Engineering - Masters",
+          "Science & Business",
+          "Honours Mathematics",
+          "Chemical Engineering - Masters",
+          "Combinatorics & Optimization",
+          "Mathematical Finance",
+          "Nanotechnology Engineering"
+        ]
+      }
+    }
+  },
+  {
+    "posting_id": "460594",
+    "title": "Automation Engineering Co-op",
+    "organization": "Mondelez International",
+    "division": "Mondelez Canada Inc",
+    "openings": "1",
+    "city": "Toronto",
+    "level": "Intermediate, Senior",
+    "apps": "64",
+    "app_deadline": "Mar 9, 2026 9:00 AM",
+    "raw_text": "460594 | Automation Engineering Co-op | Mondelez International | Mondelez Canada Inc | 1 | Toronto | Intermediate, Senior | 64 | Mar 9, 2026 9:00 AM",
+    "hiring_history": {
+      "hires_by_faculty": {
+        "type": "pieChart",
+        "title": "Hires by Faculty<br>Mondelez International - Mondelez Canada Inc",
+        "description": "",
+        "data": [
+          {
+            "name": "Engineering",
+            "y": "63"
+          },
+          {
+            "name": "Mathematics",
+            "y": "26"
+          },
+          {
+            "name": "Science",
+            "y": "11"
+          }
+        ]
+      },
+      "hires_by_student_work_term_number": {
+        "type": "pieChart",
+        "title": "Hires by Student Work Term Number<br>Mondelez International - Mondelez Canada Inc",
+        "description": "",
+        "data": [
+          {
+            "name": "First",
+            "y": "11"
+          },
+          {
+            "name": "Second",
+            "y": "26"
+          },
+          {
+            "name": "Third",
+            "y": "30"
+          },
+          {
+            "name": "Fourth",
+            "y": "11"
+          },
+          {
+            "name": "Fifth",
+            "y": "15"
+          },
+          {
+            "name": "Sixth +",
+            "y": "7"
+          }
+        ]
+      },
+      "most_frequently_hired_programs": {
+        "type": "barChart",
+        "title": "Most Frequently Hired Programs - Mondelez International - Mondelez Canada Inc",
+        "description": "",
+        "series": [
+          {
+            "data": [
+              8,
+              4,
+              3,
+              3,
+              3,
+              2,
+              1,
+              1,
+              1,
+              1
+            ],
+            "name": "Hires"
+          }
+        ],
+        "categories": [
+          "Chemical Engineering",
+          "Mechatronics Engineering",
+          "Mathematics/Business Administration",
+          "Mechanical and Mechatronics Engineering - Masters",
+          "Science & Business",
+          "Honours Mathematics",
+          "Chemical Engineering - Masters",
+          "Combinatorics & Optimization",
+          "Mathematical Finance",
+          "Nanotechnology Engineering"
+        ]
+      }
+    }
+  },
+  {
+    "posting_id": "460554",
+    "title": "Software Developer",
+    "organization": "Marketing Kitchen Inc",
+    "division": "Divisional Office",
+    "openings": "1",
+    "city": "Markham",
+    "level": "Intermediate, Senior",
+    "apps": "120",
+    "app_deadline": "Mar 10, 2026 9:00 AM",
+    "raw_text": "460554 | Software Developer | Marketing Kitchen Inc | Divisional Office | 1 | Markham | Intermediate, Senior | 120 | Mar 10, 2026 9:00 AM",
+    "hiring_history": {
+      "hires_by_faculty": {
+        "type": "pieChart",
+        "title": "Hires by Faculty<br>Marketing Kitchen Inc - Divisional Office",
+        "description": "",
+        "data": [
+          {
+            "name": "Engineering",
+            "y": "25"
+          },
+          {
+            "name": "Mathematics",
+            "y": "75"
+          }
+        ]
+      },
+      "hires_by_student_work_term_number": {
+        "type": "pieChart",
+        "title": "Hires by Student Work Term Number<br>Marketing Kitchen Inc - Divisional Office",
+        "description": "",
+        "data": [
+          {
+            "name": "Fourth",
+            "y": "50"
+          },
+          {
+            "name": "Fifth",
+            "y": "38"
+          },
+          {
+            "name": "Sixth +",
+            "y": "13"
+          }
+        ]
+      },
+      "most_frequently_hired_programs": {
+        "type": "barChart",
+        "title": "Most Frequently Hired Programs - Marketing Kitchen Inc - Divisional Office",
+        "description": "",
+        "series": [
+          {
+            "data": [
+              5,
+              2,
+              1
+            ],
+            "name": "Hires"
+          }
+        ],
+        "categories": [
+          "Computer Science/BCS",
+          "Computer Engineering",
+          "Combinatorics & Optimization"
+        ]
+      }
+    }
+  },
+  {
+    "posting_id": "460536",
+    "title": "QA Analyst Intern",
+    "organization": "Propel Holdings Inc",
+    "division": "Divisional Office",
+    "openings": "2",
+    "city": "Toronto",
+    "level": "Junior, Intermediate",
+    "apps": "406",
+    "app_deadline": "Mar 9, 2026 9:00 AM",
+    "raw_text": "460536 | QA Analyst Intern | Propel Holdings Inc | Divisional Office | 2 | Toronto | Junior, Intermediate | 406 | Mar 9, 2026 9:00 AM",
+    "hiring_history": {
+      "hires_by_faculty": {
+        "type": "pieChart",
+        "title": "Hires by Faculty<br>Propel Holdings Inc - Divisional Office",
+        "description": "",
+        "data": [
+          {
+            "name": "Arts",
+            "y": "12"
+          },
+          {
+            "name": "Engineering",
+            "y": "3"
+          },
+          {
+            "name": "Mathematics",
+            "y": "85"
+          }
+        ]
+      },
+      "hires_by_student_work_term_number": {
+        "type": "pieChart",
+        "title": "Hires by Student Work Term Number<br>Propel Holdings Inc - Divisional Office",
+        "description": "",
+        "data": [
+          {
+            "name": "First",
+            "y": "32"
+          },
+          {
+            "name": "Second",
+            "y": "24"
+          },
+          {
+            "name": "Third",
+            "y": "18"
+          },
+          {
+            "name": "Fourth",
+            "y": "18"
+          },
+          {
+            "name": "Fifth",
+            "y": "9"
+          }
+        ]
+      },
+      "most_frequently_hired_programs": {
+        "type": "barChart",
+        "title": "Most Frequently Hired Programs - Propel Holdings Inc - Divisional Office",
+        "description": "",
+        "series": [
+          {
+            "data": [
+              24,
+              3,
+              2,
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            "name": "Hires"
+          }
+        ],
+        "categories": [
+          "Computer Science/BCS",
+          "Accounting & Financial Management",
+          "Honours Mathematics",
+          "Computational Mathematics",
+          "Data Science and Artificial Intelligence - Masters",
+          "English",
+          "Mechatronics Engineering",
+          "Statistics"
+        ]
+      }
+    }
+  },
+  {
+    "posting_id": "460514",
+    "title": "Mechatronics Engineering",
+    "organization": "University of Waterloo",
+    "division": "Faculty of Engineering",
+    "openings": "1",
+    "city": "Waterloo",
+    "level": "Intermediate, Senior",
+    "apps": "91",
+    "app_deadline": "Mar 9, 2026 9:00 AM",
+    "raw_text": "460514 | Mechatronics Engineering | University of Waterloo | Faculty of Engineering | 1 | Waterloo | Intermediate, Senior | 91 | Mar 9, 2026 9:00 AM",
+    "hiring_history": {
+      "hires_by_faculty": {
+        "type": "pieChart",
+        "title": "Hires by Faculty<br>University of Waterloo - Faculty of Engineering",
+        "description": "",
+        "data": [
+          {
+            "name": "Arts",
+            "y": "2"
+          },
+          {
+            "name": "Engineering",
+            "y": "84"
+          },
+          {
+            "name": "Environment",
+            "y": "0"
+          },
+          {
+            "name": "Health",
+            "y": "1"
+          },
+          {
+            "name": "Mathematics",
+            "y": "7"
+          },
+          {
+            "name": "Science",
+            "y": "6"
+          }
+        ]
+      },
+      "hires_by_student_work_term_number": {
+        "type": "pieChart",
+        "title": "Hires by Student Work Term Number<br>University of Waterloo - Faculty of Engineering",
+        "description": "",
+        "data": [
+          {
+            "name": "First",
+            "y": "23"
+          },
+          {
+            "name": "Second",
+            "y": "22"
+          },
+          {
+            "name": "Third",
+            "y": "17"
+          },
+          {
+            "name": "Fourth",
+            "y": "14"
+          },
+          {
+            "name": "Fifth",
+            "y": "11"
+          },
+          {
+            "name": "Sixth +",
+            "y": "13"
+          }
+        ]
+      },
+      "most_frequently_hired_programs": {
+        "type": "barChart",
+        "title": "Most Frequently Hired Programs - University of Waterloo - Faculty of Engineering",
+        "description": "",
+        "series": [
+          {
+            "data": [
+              150,
+              137,
+              132,
+              111,
+              89,
+              82,
+              47,
+              39,
+              36,
+              35
+            ],
+            "name": "Hires"
+          }
+        ],
+        "categories": [
+          "Mechatronics Engineering",
+          "Chemical Engineering",
+          "Nanotechnology Engineering",
+          "Mechanical Engineering",
+          "Biomedical Engineering",
+          "Computer Engineering",
+          "Environmental Engineering",
+          "Systems Design Engineering",
+          "Computer Science/BCS",
+          "Electrical Engineering"
+        ]
+      }
+    }
+  },
+  {
+    "posting_id": "460503",
+    "title": "Software Developer (Startup)",
+    "organization": "Lindy",
+    "division": "Divisional Office",
+    "openings": "1",
+    "city": "San Francisco",
+    "level": "Intermediate, Senior",
+    "apps": "388",
+    "app_deadline": "Mar 9, 2026 9:00 AM",
+    "raw_text": "460503 | Software Developer (Startup) | Lindy | Divisional Office | 1 | San Francisco | Intermediate, Senior | 388 | Mar 9, 2026 9:00 AM",
+    "hiring_history": {
+      "hires_by_faculty": null,
+      "hires_by_student_work_term_number": null,
+      "most_frequently_hired_programs": null
+    }
+  },
+  {
+    "posting_id": "460218",
+    "title": "Full Stack Engineering",
+    "organization": "Revley AI LLC",
+    "division": "Divisional Office",
+    "openings": "2",
+    "city": "Wilmington",
+    "level": "Intermediate, Senior",
+    "apps": "151",
+    "app_deadline": "Mar 9, 2026 9:00 AM",
+    "raw_text": "460218 | Full Stack Engineering | Revley AI LLC | Divisional Office | 2 | Wilmington | Intermediate, Senior | 151 | Mar 9, 2026 9:00 AM",
+    "hiring_history": {
+      "hires_by_faculty": null,
+      "hires_by_student_work_term_number": null,
+      "most_frequently_hired_programs": null
+    }
+  },
+  {
+    "posting_id": "459882",
+    "title": "Application Programmer",
+    "organization": "Ontario Ministry of Public and Business Service Delivery and Procurement",
+    "division": "Health Services Information and Information Technology Cluster",
+    "openings": "1",
+    "city": "Toronto",
+    "level": "Junior, Intermediate, Senior",
+    "apps": "615",
+    "app_deadline": "Mar 13, 2026 9:00 AM",
+    "raw_text": "459882 | Application Programmer | Ontario Ministry of Public and Business Service Delivery and Procurement | Health Services Information and Information Technology Cluster | 1 | Toronto | Junior, Intermediate, Senior | 615 | Mar 13, 2026 9:00 AM",
+    "hiring_history": {
+      "hires_by_faculty": {
+        "type": "pieChart",
+        "title": "Hires by Faculty<br>Ontario Ministry of Public and Business Service Delivery and Procurement - Health Services Information and Information Technology Cluster",
+        "description": "",
+        "data": [
+          {
+            "name": "Engineering",
+            "y": "50"
+          },
+          {
+            "name": "Health",
+            "y": "17"
+          },
+          {
+            "name": "Mathematics",
+            "y": "33"
+          }
+        ]
+      },
+      "hires_by_student_work_term_number": {
+        "type": "pieChart",
+        "title": "Hires by Student Work Term Number<br>Ontario Ministry of Public and Business Service Delivery and Procurement - Health Services Information and Information Technology Cluster",
+        "description": "",
+        "data": [
+          {
+            "name": "Second",
+            "y": "17"
+          },
+          {
+            "name": "Third",
+            "y": "50"
+          },
+          {
+            "name": "Fourth",
+            "y": "33"
+          }
+        ]
+      },
+      "most_frequently_hired_programs": {
+        "type": "barChart",
+        "title": "Most Frequently Hired Programs - Ontario Ministry of Public and Business Service Delivery and Procurement - Health Services Information and Information Technology Cluster",
+        "description": "",
+        "series": [
+          {
+            "data": [
+              2,
+              2,
+              1,
+              1
+            ],
+            "name": "Hires"
+          }
+        ],
+        "categories": [
+          "Computer Engineering",
+          "Honours Mathematics",
+          "Management Engineering",
+          "Public Health"
+        ]
+      }
+    }
+  },
+  {
+    "posting_id": "459443",
+    "title": "AI/Software Engineering Intern (Start up)",
+    "organization": "Capsule AI",
+    "division": "Divisional Office",
+    "openings": "1",
+    "city": "",
+    "level": "Junior, Intermediate",
+    "apps": "359",
+    "app_deadline": "Mar 10, 2026 9:00 AM",
+    "raw_text": "459443 | AI/Software Engineering Intern (Start up) | Capsule AI | Divisional Office | 1 | | Junior, Intermediate | 359 | Mar 10, 2026 9:00 AM",
+    "hiring_history": {
+      "hires_by_faculty": null,
+      "hires_by_student_work_term_number": null,
+      "most_frequently_hired_programs": null
+    }
+  },
+  {
+    "posting_id": "452856",
+    "title": "Software Engineering - AI/ML Infrastructure",
+    "organization": "Versa Networks Inc",
+    "division": "Divisional Office",
+    "openings": "1",
+    "city": "Santa Clara",
+    "level": "Senior",
+    "apps": "339",
+    "app_deadline": "Mar 10, 2026 9:00 AM",
+    "raw_text": "452856 | Software Engineering - AI/ML Infrastructure | Versa Networks Inc | Divisional Office | 1 | Santa Clara | Senior | 339 | Mar 10, 2026 9:00 AM",
+    "hiring_history": {
+      "hires_by_faculty": {
+        "type": "pieChart",
+        "title": "Hires by Faculty<br>Versa Networks Inc - Divisional Office",
+        "description": "",
+        "data": [
+          {
+            "name": "Engineering",
+            "y": "55"
+          },
+          {
+            "name": "Mathematics",
+            "y": "45"
+          }
+        ]
+      },
+      "hires_by_student_work_term_number": {
+        "type": "pieChart",
+        "title": "Hires by Student Work Term Number<br>Versa Networks Inc - Divisional Office",
+        "description": "",
+        "data": [
+          {
+            "name": "First",
+            "y": "2"
+          },
+          {
+            "name": "Second",
+            "y": "5"
+          },
+          {
+            "name": "Third",
+            "y": "11"
+          },
+          {
+            "name": "Fourth",
+            "y": "23"
+          },
+          {
+            "name": "Fifth",
+            "y": "31"
+          },
+          {
+            "name": "Sixth +",
+            "y": "29"
+          }
+        ]
+      },
+      "most_frequently_hired_programs": {
+        "type": "barChart",
+        "title": "Most Frequently Hired Programs - Versa Networks Inc - Divisional Office",
+        "description": "",
+        "series": [
+          {
+            "data": [
+              21,
+              21,
+              7,
+              3,
+              2,
+              2,
+              2,
+              2,
+              1,
+              1
+            ],
+            "name": "Hires"
+          }
+        ],
+        "categories": [
+          "Computer Engineering",
+          "Computer Science/BCS",
+          "Software Engineering",
+          "Statistics",
+          "Biomedical Engineering",
+          "Chemical Engineering",
+          "Financial Analysis & Risk Management",
+          "Mechatronics Engineering",
+          "Computational Mathematics",
+          "Computing and Financial Management"
+        ]
+      }
+    }
+  }
+]

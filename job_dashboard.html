@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CoopSync 职位匹配看板</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
+        
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background-color: #f8fafc;
+            color: #1e293b;
+        }
+
+        .score-gradient {
+            background: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .job-card {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+        }
+
+        .job-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+            border-color: #fbbf24;
+        }
+
+        .glass-nav {
+            background: rgba(15, 23, 42, 0.9);
+            backdrop-filter: blur(10px);
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <!-- 导航栏 -->
+    <nav class="glass-nav text-white py-4 px-6 sticky top-0 z-50 shadow-2xl">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-amber-400 rounded-xl flex items-center justify-center text-slate-900 font-black text-xl shadow-lg shadow-amber-500/20">C</div>
+                <div>
+                    <h1 class="text-xl font-black italic tracking-tighter">COOPSYNC <span class="text-amber-400 font-light not-italic text-sm ml-1">MATCH PANEL</span></h1>
+                </div>
+            </div>
+            <div class="flex items-center gap-4">
+                <button onclick="importJSON()" class="bg-slate-800 hover:bg-slate-700 text-amber-400 px-5 py-2 rounded-lg font-bold text-xs transition-all border border-slate-700">
+                    导入数据
+                </button>
+                <button onclick="clearData()" class="text-slate-400 hover:text-red-400 text-xs font-medium transition-colors">
+                    重置
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto py-10 px-6">
+        <!-- 统计面板 -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+            <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
+                <p class="text-slate-400 text-[10px] font-black uppercase tracking-widest mb-1">Total Jobs</p>
+                <h2 class="text-5xl font-black text-slate-900" id="stat-total">0</h2>
+            </div>
+            <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 border-l-4 border-l-orange-400">
+                <p class="text-orange-400 text-[10px] font-black uppercase tracking-widest mb-1">Perfect Matches</p>
+                <h2 class="text-5xl font-black text-slate-900" id="stat-high">0</h2>
+                <p class="text-slate-400 text-[10px] mt-2 font-bold uppercase tracking-tight">Score ≥ 85%</p>
+            </div>
+            <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 border-l-4 border-l-amber-400">
+                <p class="text-amber-500 text-[10px] font-black uppercase tracking-widest mb-1">Average Fit</p>
+                <h2 class="text-5xl font-black text-slate-900" id="stat-avg">0%</h2>
+            </div>
+        </div>
+
+        <!-- 职位网格 -->
+        <div id="job-container" class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- 空状态 -->
+            <div id="empty-state" class="col-span-full flex flex-col items-center justify-center py-32 opacity-20">
+                <div class="text-9xl mb-4">🧊</div>
+                <h2 class="text-xl font-black uppercase tracking-widest">等待数据导出...</h2>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        function normalizeJobs(rawJobs) {
+            return (rawJobs || []).map((job) => {
+                const score = typeof job.score === 'number' ? job.score : null;
+                const suggestions = Array.isArray(job.suggestions) ? job.suggestions : [];
+                const url = typeof job.url === 'string' && job.url.trim() ? job.url.trim() : '';
+
+                return {
+                    ...job,
+                    displayCompany: job.company || job.organization || 'Employer',
+                    displayId: job.id || job.posting_id || '---',
+                    displayScore: score,
+                    displaySuggestions: suggestions,
+                    detailUrl: url
+                };
+            });
+        }
+
+        function init() {
+            const rawData = localStorage.getItem('coopsync_jobs');
+            if (rawData) {
+                try {
+                    const jobs = normalizeJobs(JSON.parse(rawData));
+                    render(jobs);
+                } catch (e) {
+                    console.error("解析数据失败", e);
+                }
+            }
+        }
+
+        function render(jobs) {
+            const container = document.getElementById('job-container');
+            const emptyState = document.getElementById('empty-state');
+            
+            if (!jobs || jobs.length === 0) {
+                emptyState.style.display = 'flex';
+                return;
+            }
+            emptyState.style.display = 'none';
+
+            document.getElementById('stat-total').innerText = jobs.length;
+            const analyzedJobs = jobs.filter(j => typeof j.displayScore === 'number');
+            document.getElementById('stat-high').innerText = analyzedJobs.filter(j => j.displayScore >= 85).length;
+            const average = analyzedJobs.length
+                ? Math.round(analyzedJobs.reduce((acc, curr) => acc + curr.displayScore, 0) / analyzedJobs.length)
+                : 0;
+            document.getElementById('stat-avg').innerText = analyzedJobs.length ? `${average}%` : 'N/A';
+
+            const sorted = [...jobs].sort((a, b) => {
+                const scoreA = typeof a.displayScore === 'number' ? a.displayScore : -1;
+                const scoreB = typeof b.displayScore === 'number' ? b.displayScore : -1;
+                return scoreB - scoreA;
+            });
+
+            container.innerHTML = sorted.map(job => `
+                <div class="bg-white rounded-[2.5rem] p-8 job-card flex flex-col relative group">
+                    <div class="flex justify-between items-start mb-6">
+                        <div class="flex-1 pr-4">
+                            <span class="inline-block px-3 py-1 bg-slate-50 text-slate-400 text-[9px] font-black uppercase tracking-widest rounded-full mb-3 border border-slate-100">
+                                ${job.displayCompany}
+                            </span>
+                            <h3 class="text-2xl font-black text-slate-900 leading-tight mb-2 group-hover:text-amber-600 transition-colors">
+                                ${job.title || 'Untitled'}
+                            </h3>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-5xl font-black score-gradient leading-none">${typeof job.displayScore === 'number' ? `${job.displayScore}%` : '--'}</div>
+                            <p class="text-[9px] font-black text-slate-300 uppercase tracking-widest mt-1">Match Index</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-50 rounded-2xl p-5 mb-8 border border-slate-100/50">
+                        <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-3 flex items-center gap-2">
+                            <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span> AI Optimization Tips
+                        </p>
+                        <div class="space-y-3">
+                            ${(job.displaySuggestions.length ? job.displaySuggestions : ['This export only contains job listings. No AI match analysis was saved.']).slice(0, 3).map(s => `
+                                <p class="text-xs text-slate-600 leading-relaxed font-medium italic">"${s}"</p>
+                            `).join('')}
+                        </div>
+                    </div>
+
+                    <div class="mt-auto flex justify-between items-center">
+                        <div class="text-[9px] font-bold text-slate-300">ID: ${job.displayId}</div>
+                        ${job.detailUrl
+                            ? `<a href="${job.detailUrl}" target="_blank" rel="noopener noreferrer" class="bg-slate-900 text-white px-6 py-3 rounded-xl font-black text-[10px] tracking-widest hover:bg-amber-400 hover:text-slate-900 transition-all">VIEW DETAILS</a>`
+                            : `<button type="button" disabled class="bg-slate-200 text-slate-400 px-6 py-3 rounded-xl font-black text-[10px] tracking-widest cursor-not-allowed">NO DETAIL LINK</button>`
+                        }
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function clearData() {
+            if (confirm("确定要清空吗？")) {
+                localStorage.removeItem('coopsync_jobs');
+                location.reload();
+            }
+        }
+
+        function importJSON() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            input.onchange = e => {
+                const reader = new FileReader();
+                reader.onload = ev => {
+                    localStorage.setItem('coopsync_jobs', ev.target.result);
+                    init();
+                };
+                reader.readAsText(e.target.files[0]);
+            };
+            input.click();
+        }
+
+        init();
+        window.addEventListener('storage', (e) => { if (e.key === 'coopsync_jobs') init(); });
+    </script>
+</body>
+</html>
