@@ -84,11 +84,57 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   
   if (exportJobsBtn) {
-    exportJobsBtn.addEventListener('click', () => {
-      // Stub for export functionality if the user added it
-      if (exportStatus) {
-        exportStatus.textContent = "Export functionality to be implemented in background script.";
-        exportStatus.style.display = 'block';
+    exportJobsBtn.addEventListener('click', async () => {
+      if (!exportStatus) return;
+
+      const originalLabel = exportJobsBtn.textContent;
+      exportJobsBtn.disabled = true;
+      exportJobsBtn.textContent = 'Exporting...';
+      exportStatus.style.display = 'block';
+      exportStatus.style.color = '#555';
+      exportStatus.textContent = 'Collecting jobs from current WaterlooWorks filter...';
+
+      try {
+        const [tab] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
+        if (!tab || !tab.id) {
+          throw new Error('No active tab found.');
+        }
+
+        const tabUrl = tab.url || '';
+        if (!tabUrl.includes('waterlooworks.uwaterloo.ca')) {
+          throw new Error('Please open WaterlooWorks jobs page first, then click export.');
+        }
+
+        const response = await chrome.tabs.sendMessage(tab.id, { action: 'EXPORT_FILTERED_JOBS' });
+        if (!response || !response.success) {
+          throw new Error(response?.error || 'Export failed.');
+        }
+
+        const jobs = Array.isArray(response.jobs) ? response.jobs : [];
+        if (!jobs.length) {
+          throw new Error('No jobs found under current filter.');
+        }
+
+        const ts = new Date().toISOString().replace(/[-:]/g, '').replace('T', '_').slice(0, 15);
+        const filename = `waterlooworks_jobs_${ts}.json`;
+        const blob = new Blob([JSON.stringify(jobs, null, 2)], { type: 'application/json' });
+        const objectUrl = URL.createObjectURL(blob);
+
+        await chrome.downloads.download({
+          url: objectUrl,
+          filename,
+          saveAs: true
+        });
+        URL.revokeObjectURL(objectUrl);
+
+        exportStatus.style.color = '#0d652d';
+        exportStatus.textContent = `Exported ${jobs.length} jobs.`;
+      } catch (error) {
+        exportStatus.style.color = '#b00020';
+        exportStatus.textContent = error?.message || 'Export failed.';
+      } finally {
+        exportJobsBtn.disabled = false;
+        exportJobsBtn.textContent = originalLabel;
       }
     });
   }
