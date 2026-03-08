@@ -660,6 +660,43 @@ function getHiringHistoryFromWtr(report) {
     };
 }
 
+function getExtraFieldsFromOverviewHtml(html) {
+    const out = {
+        work_term_duration: '',
+        special_job_requirements: '',
+        required_skills: ''
+    };
+    if (!html) return out;
+
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, 'text/html');
+    const pageText = doc.body?.innerText || '';
+
+    function extractByLabel(labelRegex, stopRegex) {
+        const m = pageText.match(labelRegex);
+        if (!m || !m[1]) return '';
+        let v = m[1];
+        if (stopRegex) v = v.split(stopRegex)[0] || v;
+        return cleanText(v);
+    }
+
+    out.work_term_duration = extractByLabel(
+        /work\s*term\s*duration\s*[:\-]?\s*([^\n]{1,150})/i
+    );
+
+    out.special_job_requirements = extractByLabel(
+        /special\s*job\s*requirements?\s*[:\-]?\s*([\s\S]{1,1200})/i,
+        /\n\s*(required\s*skills?|job\s*responsibilities?|compensation|documents?\s*required|additional\s*information)\b/i
+    );
+
+    out.required_skills = extractByLabel(
+        /required\s*skills?\s*[:\-]?\s*([\s\S]{1,1200})/i,
+        /\n\s*(job\s*responsibilities?|special\s*job\s*requirements?|compensation|documents?\s*required|additional\s*information)\b/i
+    );
+
+    return out;
+}
+
 async function attachHiringHistory(jobs) {
     // Tokens are embedded in page scripts by WaterlooWorks and reused here
     // to call internal POST endpoints for richer export data.
@@ -674,6 +711,7 @@ async function attachHiringHistory(jobs) {
 
     const uniqPostingIds = Array.from(new Set(postingIds));
     const historyMap = {};
+    const extraMap = {};
     const concurrency = 6;
     let index = 0;
 
@@ -686,6 +724,7 @@ async function attachHiringHistory(jobs) {
                     fetchOverviewHtml(pid, overviewToken),
                     postingDataToken ? fetchPostingJson(pid, postingDataToken) : Promise.resolve(null)
                 ]);
+                extraMap[pid] = getExtraFieldsFromOverviewHtml(html);
 
                 const fromOverview = getHiringHistoryFromHtml(html);
                 const fromPostingData = getHiringHistoryFromPosting(postingData);
@@ -718,6 +757,11 @@ async function attachHiringHistory(jobs) {
                     hires_by_student_work_term_number: null,
                     most_frequently_hired_programs: null
                 };
+                extraMap[pid] = {
+                    work_term_duration: '',
+                    special_job_requirements: '',
+                    required_skills: ''
+                };
             }
             await waitMs(50);
         }
@@ -735,7 +779,12 @@ async function attachHiringHistory(jobs) {
             hires_by_faculty: null,
             hires_by_student_work_term_number: null,
             most_frequently_hired_programs: null
-        }
+        },
+        ...(extraMap[job.posting_id] || {
+            work_term_duration: '',
+            special_job_requirements: '',
+            required_skills: ''
+        })
     }));
 }
 
