@@ -32,9 +32,12 @@
                     </svg>
                     <input type="text" id="searchInput" placeholder="Search by title, company, or city..." />
                 </div>
-                
-                <div class="stats" id="jobStats">
-                    Loading jobs...
+
+                <div class="header-actions">
+                    <button id="scoreJobsBtn" class="score-btn">Score with AI</button>
+                    <div class="stats" id="jobStats">
+                        Loading jobs...
+                    </div>
                 </div>
             </div>
         </header>
@@ -73,6 +76,7 @@
         <div class="job-card glass-card">
             <div class="job-card-header">
                 <div>
+                    <div class="match-badge match-badge-pending">Not scored</div>
                     <h3 class="job-title"></h3>
                     <p class="company-name"></p>
                 </div>
@@ -106,6 +110,8 @@
             </div>
 
             <div class="tag-container level-tags"></div>
+
+            <p class="match-reason">Run AI scoring to rank these jobs against your resume.</p>
             
             <div class="card-footer">
                 <a href="#" class="view-btn" target="_blank">View on WaterlooWorks</a>

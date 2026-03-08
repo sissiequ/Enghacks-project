@@ -21,6 +21,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const openPostingBtn = document.getElementById('openPostingBtn');
   const openApplyBtn = document.getElementById('openApplyBtn');
   const openPostingStatus = document.getElementById('openPostingStatus');
+  const openDashboardBtn = document.getElementById('openDashboardBtn');
+  const openWebStatus = document.getElementById('openWebStatus');
 
   function isJobsPageUrl(url) {
     return typeof url === 'string' && url.includes('/myAccount/co-op/full/jobs.htm');
@@ -298,6 +300,34 @@ document.addEventListener('DOMContentLoaded', () => {
       } finally {
         openApplyBtn.disabled = false;
         openApplyBtn.textContent = originalLabel;
+      }
+    });
+  }
+
+  if (openDashboardBtn) {
+    openDashboardBtn.addEventListener('click', async () => {
+      if (!openWebStatus) return;
+
+      const originalLabel = openDashboardBtn.textContent;
+      openDashboardBtn.disabled = true;
+      openDashboardBtn.textContent = 'Opening...';
+      openWebStatus.style.display = 'block';
+      openWebStatus.style.color = '#555';
+      openWebStatus.textContent = 'Opening dashboard...';
+
+      try {
+        await chrome.tabs.create({
+          url: chrome.runtime.getURL('job-board-site/index.html'),
+          active: true
+        });
+        openWebStatus.style.color = '#0d652d';
+        openWebStatus.textContent = 'Dashboard opened successfully.';
+      } catch (error) {
+        openWebStatus.style.color = '#b00020';
+        openWebStatus.textContent = error?.message || 'Could not open the dashboard.';
+      } finally {
+        openDashboardBtn.disabled = false;
+        openDashboardBtn.textContent = originalLabel;
       }
     });
   }
