@@ -5,9 +5,11 @@
  * - Promise<{ suggestions: Array<{ section: string, target: string, issue: string, rewrite: string }> }>
  */
 async function handleAnalyzeJob(request) {
+  // Read user profile required for AI analysis.
   const { apiKey, resumeText } = await getStoredProfile();
   const jobDescription = (request.jobDescription || "").trim();
 
+  // Validate required prerequisites.
   if (!apiKey) {
     throw new Error("No API key found. Save your OpenRouter API key in the extension options first.");
   }
@@ -16,6 +18,7 @@ async function handleAnalyzeJob(request) {
     throw new Error("No resume found. Upload your resume PDF in the extension options first.");
   }
 
+  // Build prompt for resume-tailoring suggestions.
   const aiContent = await callOpenRouter(apiKey, [
     {
       role: "system",
@@ -45,6 +48,7 @@ async function handleAnalyzeJob(request) {
   ]);
 
   return {
+    // Keep response shape stable for content-side renderer.
     suggestions: Array.isArray(aiContent.suggestions) ? aiContent.suggestions.slice(0, 5) : []
   };
 }

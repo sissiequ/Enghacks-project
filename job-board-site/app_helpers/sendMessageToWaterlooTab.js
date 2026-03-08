@@ -7,6 +7,7 @@
  * - Promise<{ success: boolean, queued?: boolean, error?: string }>
  */
 async function sendMessageToWaterlooTab(ctx, message, options = {}) {
+  // AI_GENERATED_START
   let tab = await getWaterlooWorksTab(ctx);
   if (!tab?.id) {
     await chrome.tabs.create({ url: ctx.WATERLOOWORKS_JOBS_URL, active: true });
@@ -37,6 +38,7 @@ async function sendMessageToWaterlooTab(ctx, message, options = {}) {
   }
 
   return response;
+  // AI_GENERATED_END
 }
 
 globalThis.sendMessageToWaterlooTab = sendMessageToWaterlooTab;

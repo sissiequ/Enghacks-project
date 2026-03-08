@@ -6,6 +6,7 @@
  * - Promise<{ success: boolean, queued?: boolean, error?: string }>
  */
 async function openPostingFromDashboard(ctx, postingId) {
+  // AI_GENERATED_START
   const normalizedPostingId = String(postingId || "").trim();
   if (!normalizedPostingId) {
     throw new Error("Missing posting ID.");
@@ -25,6 +26,7 @@ async function openPostingFromDashboard(ctx, postingId) {
   }
 
   return response;
+  // AI_GENERATED_END
 }
 
 globalThis.openPostingFromDashboard = openPostingFromDashboard;

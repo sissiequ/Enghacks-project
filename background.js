@@ -1,4 +1,5 @@
 // Load helper functions (one function per file).
+//AI generated functions.
 importScripts(
   "background_helpers/cap.js",
   "background_helpers/getStoredProfile.js",
@@ -9,21 +10,19 @@ importScripts(
   "background_helpers/handleScoreJobsForDashboard.js"
 );
 
-// Background skeleton: message routing only.
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  // AI_GENERATED_START
   const action = request?.action;
   if (!action) return false;
 
   (async () => {
     if (action === "analyzeJob") {
-      // Uses helper function: handleAnalyzeJob (from background_helpers/handleAnalyzeJob.js)
       const data = await handleAnalyzeJob(request);
       sendResponse({ success: true, data });
       return;
     }
 
     if (action === "scoreJobsForDashboard") {
-      // Uses helper function: handleScoreJobsForDashboard (from background_helpers/handleScoreJobsForDashboard.js)
       const results = await handleScoreJobsForDashboard(request);
       sendResponse({ success: true, results });
       return;
@@ -39,4 +38,5 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   });
 
   return true;
+  // AI_GENERATED_END
 });

@@ -1069,6 +1069,7 @@ function onJobsPage() {
 }
 
 async function runPendingAction() {
+    // AI_GENERATED_START
     if (!chrome || !chrome.storage || !chrome.storage.local) return;
     if (!onJobsPage()) return;
 
@@ -1118,9 +1119,11 @@ async function runPendingAction() {
             }
         });
     } catch (_e) {}
+    // AI_GENERATED_END
 }
 
 function startPendingActionWatcher() {
+    // AI_GENERATED_START
     if (pendingWwActionWatcherStarted) return;
     if (!onJobsPage()) return;
     pendingWwActionWatcherStarted = true;
@@ -1137,9 +1140,11 @@ function startPendingActionWatcher() {
 
     setTimeout(tick, 1200);
     setInterval(tick, 2500);
+    // AI_GENERATED_END
 }
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    // AI_GENERATED_START
     if (request.action === 'EXPORT_FILTERED_JOBS') {
         (async () => {
             if (isExportingJobs) {
@@ -1183,6 +1188,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         })();
         return true;
     }
+    // AI_GENERATED_END
 });
 
 }

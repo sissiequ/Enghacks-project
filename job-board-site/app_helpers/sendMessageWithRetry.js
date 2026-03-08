@@ -8,6 +8,7 @@
  * - Promise<any>: response from content script
  */
 async function sendMessageWithRetry(tabId, message, retries = 12, delayMs = 350) {
+  // AI_GENERATED_START
   let lastError = null;
 
   for (let i = 0; i < retries; i += 1) {
@@ -31,6 +32,7 @@ async function sendMessageWithRetry(tabId, message, retries = 12, delayMs = 350)
   }
 
   throw lastError || new Error("Failed to communicate with the WaterlooWorks tab.");
+  // AI_GENERATED_END
 }
 
 globalThis.sendMessageWithRetry = sendMessageWithRetry;

@@ -29,6 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   async function getWaterlooWorksTab() {
+    // AI_GENERATED_START
     const [activeTab] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
     if (activeTab?.id && isJobsPageUrl(activeTab.url || '')) {
       return activeTab;
@@ -36,6 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const candidates = await chrome.tabs.query({ url: '*://waterlooworks.uwaterloo.ca/*jobs.htm*' });
     if (candidates.length > 0) return candidates[0];
     return null;
+    // AI_GENERATED_END
   }
 
   async function waitForTabComplete(tabId, timeoutMs = 15000) {
@@ -48,6 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   async function sendMessageWithRetry(tabId, message, retries = 12, delayMs = 350) {
+    // AI_GENERATED_START
     let lastError = null;
     for (let i = 0; i < retries; i += 1) {
       try {
@@ -67,9 +70,11 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
     throw lastError || new Error('Failed to communicate with WaterlooWorks tab.');
+    // AI_GENERATED_END
   }
 
   async function sendMessageToWaterlooTab(message, options = {}) {
+    // AI_GENERATED_START
     let tab = await getWaterlooWorksTab();
     if (!tab || !tab.id) {
       tab = await chrome.tabs.create({ url: WATERLOOWORKS_JOBS_URL, active: true });
@@ -100,6 +105,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     return response;
+    // AI_GENERATED_END
   }
 
   // Load existing data

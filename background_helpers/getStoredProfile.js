@@ -1,6 +1,6 @@
 /**
- * Input:
- * - none
+ * no Input:
+ *
  * Output:
  * - Promise<{ apiKey: string, resumeText: string }>
  */

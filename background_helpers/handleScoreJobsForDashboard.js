@@ -5,9 +5,13 @@
  * - Promise<Array<{ posting_id: string, score: number, reason: string }>>
  */
 async function handleScoreJobsForDashboard(request) {
+  // Read user profile required for AI scoring.
   const { apiKey, resumeText } = await getStoredProfile();
+
+  // Normalize incoming jobs from dashboard payload.
   const jobs = Array.isArray(request.jobs) ? request.jobs.map(sanitizeDashboardJob).filter((job) => job.posting_id) : [];
 
+  // Validate required prerequisites.
   if (!apiKey) {
     throw new Error("No API key found. Save your OpenRouter API key in the extension options first.");
   }
@@ -20,6 +24,7 @@ async function handleScoreJobsForDashboard(request) {
     throw new Error("No jobs were provided for AI scoring.");
   }
 
+  // Build compact listing summaries to control token usage.
   const compactJobs = jobs.map((job) => {
     const hiringHistorySummary = summarizeHiringHistory(job.hiring_history);
     return {
@@ -42,6 +47,7 @@ async function handleScoreJobsForDashboard(request) {
     };
   });
 
+  // Ask AI to score each listing independently.
   const aiContent = await callOpenRouter(apiKey, [
     {
       role: "system",
@@ -69,6 +75,7 @@ async function handleScoreJobsForDashboard(request) {
   const rawResults = Array.isArray(aiContent.results) ? aiContent.results : [];
   const resultMap = new Map();
 
+  // Normalize AI output and clamp score range.
   rawResults.forEach((item) => {
     const postingId = (item?.posting_id || "").toString();
     if (!postingId) return;
@@ -81,6 +88,7 @@ async function handleScoreJobsForDashboard(request) {
     });
   });
 
+  // Return in original dashboard order with fallback values.
   return jobs.map((job) => resultMap.get(job.posting_id) || {
     posting_id: job.posting_id,
     score: 0,
