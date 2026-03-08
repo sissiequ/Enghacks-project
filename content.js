@@ -336,68 +336,6 @@ async function waitForPageTransition(prevFirstId, timeoutMs = 12000) {
     return false;
 }
 
-// -----------------------------------------
-// Hiring history extraction (3 data sources)
-// -----------------------------------------
-function sectionByHeadingMatch(matchers) {
-    const nodes = Array.from(document.querySelectorAll('h1,h2,h3,h4,h5,strong,b,label,span,p,div'));
-    for (const node of nodes) {
-        const txt = cleanExportText(node.innerText).toLowerCase();
-        if (!txt) continue;
-        if (matchers.every(m => txt.includes(m))) {
-            return node.closest('section,article,div,ui-tab-section,.doc-viewer,.table__container--fullscreen') || node.parentElement;
-        }
-    }
-    return null;
-}
-
-function extractSectionData(container) {
-    if (!container) return null;
-
-    const tables = [];
-    container.querySelectorAll('table').forEach(table => {
-        const rows = Array.from(table.querySelectorAll('tr')).map(tr =>
-            Array.from(tr.querySelectorAll('th,td')).map(cell => cleanExportText(cell.innerText)).filter(Boolean)
-        ).filter(r => r.length > 0);
-        if (rows.length > 0) tables.push(rows);
-    });
-
-    const lists = Array.from(container.querySelectorAll('li'))
-        .map(li => cleanExportText(li.innerText))
-        .filter(Boolean);
-
-    const svgText = Array.from(container.querySelectorAll('svg text'))
-        .map(t => cleanExportText(t.textContent))
-        .filter(Boolean);
-
-    const ariaChart = Array.from(container.querySelectorAll('[aria-label]'))
-        .map(el => cleanExportText(el.getAttribute('aria-label')))
-        .filter(Boolean)
-        .filter(t => /chart|hire|faculty|program|work term/i.test(t));
-
-    const lines = cleanExportText(container.innerText)
-        .split(/\n+/)
-        .map(s => cleanExportText(s))
-        .filter(Boolean)
-        .slice(0, 200);
-
-    return {
-        tables,
-        lists,
-        svg_text: svgText,
-        chart_labels: ariaChart,
-        text_lines: lines
-    };
-}
-
-function extractHiringHistoryData() {
-    return {
-        hires_by_faculty: extractSectionData(sectionByHeadingMatch(['hires by', 'faculty'])),
-        hires_by_student_work_term_number: extractSectionData(sectionByHeadingMatch(['hires by', 'work term'])),
-        most_frequently_hired_programs: extractSectionData(sectionByHeadingMatch(['most frequently', 'program']))
-    };
-}
-
 function extractActionToken(functionName) {
     try {
         const html = document.documentElement.innerHTML;
@@ -410,84 +348,6 @@ function extractActionToken(functionName) {
     } catch (_e) {
         return '';
     }
-}
-
-function parseHiringHistoryFromHtml(html) {
-    if (!html) {
-        return {
-            hires_by_faculty: null,
-            hires_by_student_work_term_number: null,
-            most_frequently_hired_programs: null
-        };
-    }
-
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(html, 'text/html');
-
-    function sectionByHeadingFromDoc(matchers) {
-        const nodes = Array.from(doc.querySelectorAll('h1,h2,h3,h4,h5,strong,b,label,span,p,div'));
-        for (const node of nodes) {
-            const txt = cleanExportText(node.textContent || '').toLowerCase();
-            if (!txt) continue;
-            if (matchers.every(m => txt.includes(m))) {
-                return node.closest('section,article,div,.doc-viewer') || node.parentElement;
-            }
-        }
-        return null;
-    }
-
-    function extractSection(container) {
-        if (!container) return null;
-
-        const tables = [];
-        container.querySelectorAll('table').forEach(table => {
-            const rows = Array.from(table.querySelectorAll('tr'))
-                .map(tr => Array.from(tr.querySelectorAll('th,td')).map(cell => cleanExportText(cell.textContent)).filter(Boolean))
-                .filter(r => r.length > 0);
-            if (rows.length) tables.push(rows);
-        });
-
-        const lists = Array.from(container.querySelectorAll('li'))
-            .map(li => cleanExportText(li.textContent))
-            .filter(Boolean);
-
-        const textLines = cleanExportText(container.textContent || '')
-            .split(/\n+/)
-            .map(s => cleanExportText(s))
-            .filter(Boolean)
-            .slice(0, 200);
-
-        return {
-            tables,
-            lists,
-            text_lines: textLines
-        };
-    }
-
-    return {
-        hires_by_faculty: extractSection(sectionByHeadingFromDoc(['hires by', 'faculty'])),
-        hires_by_student_work_term_number: extractSection(sectionByHeadingFromDoc(['hires by', 'work term'])),
-        most_frequently_hired_programs: extractSection(sectionByHeadingFromDoc(['most frequently', 'program']))
-    };
-}
-
-async function fetchPostingOverviewHtml(postingId, overviewToken) {
-    if (!postingId || !overviewToken) return '';
-    const body = new URLSearchParams();
-    body.set('action', overviewToken);
-    body.set('postingId', String(postingId));
-
-    const resp = await fetch('/myAccount/co-op/full/jobs.htm', {
-        method: 'POST',
-        credentials: 'include',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
-        },
-        body: body.toString()
-    });
-
-    if (!resp.ok) return '';
-    return await resp.text();
 }
 
 async function fetchPostingDataJson(postingId, dataToken) {
@@ -511,6 +371,25 @@ async function fetchPostingDataJson(postingId, dataToken) {
     } catch (_e) {
         return null;
     }
+}
+
+async function fetchPostingOverviewHtml(postingId, overviewToken) {
+    if (!postingId || !overviewToken) return '';
+    const body = new URLSearchParams();
+    body.set('action', overviewToken);
+    body.set('postingId', String(postingId));
+
+    const resp = await fetch('/myAccount/co-op/full/jobs.htm', {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+        },
+        body: body.toString()
+    });
+
+    if (!resp.ok) return '';
+    return await resp.text();
 }
 
 async function fetchWorkTermRatingReportJson(companyId, reportToken) {
@@ -538,94 +417,44 @@ async function fetchWorkTermRatingReportJson(companyId, reportToken) {
     }
 }
 
-function isEmptySection(section) {
-    if (!section) return true;
-    const hasTable = Array.isArray(section.tables) && section.tables.length > 0;
-    const hasList = Array.isArray(section.lists) && section.lists.length > 0;
-    const hasLines = Array.isArray(section.text_lines) && section.text_lines.length > 0;
-    return !(hasTable || hasList || hasLines);
-}
-
-function normalizeUnknownSection(value) {
-    if (value == null) return null;
-
-    if (Array.isArray(value)) {
-        const lines = value.map(v => cleanExportText(typeof v === 'object' ? JSON.stringify(v) : String(v))).filter(Boolean);
-        return {
-            tables: [],
-            lists: lines,
-            text_lines: lines
-        };
-    }
-
-    if (typeof value === 'object') {
-        const lines = Object.entries(value)
-            .map(([k, v]) => `${cleanExportText(k)}: ${cleanExportText(typeof v === 'object' ? JSON.stringify(v) : String(v))}`)
-            .filter(Boolean);
-        return {
-            tables: [],
-            lists: [],
-            text_lines: lines
-        };
-    }
-
-    const line = cleanExportText(String(value));
-    return {
-        tables: [],
-        lists: line ? [line] : [],
-        text_lines: line ? [line] : []
+function extractFieldsFromOverviewHtml(html) {
+    const out = {
+        work_term_duration: '',
+        special_job_requirements: '',
+        required_skills: ''
     };
-}
+    if (!html) return out;
 
-function extractHiringHistoryFromPostingData(postingData) {
-    const empty = {
-        hires_by_faculty: null,
-        hires_by_student_work_term_number: null,
-        most_frequently_hired_programs: null
-    };
-    if (!postingData || typeof postingData !== 'object') return empty;
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, 'text/html');
+    const pageText = cleanExportText(doc.body?.innerText || '');
 
-    const patterns = {
-        hires_by_faculty: [/faculty/i, /hire/i],
-        hires_by_student_work_term_number: [/work\s*term/i, /hire/i],
-        most_frequently_hired_programs: [/program/i, /(most|frequent|top)/i]
-    };
-
-    const found = {
-        hires_by_faculty: null,
-        hires_by_student_work_term_number: null,
-        most_frequently_hired_programs: null
-    };
-
-    const visited = new Set();
-    function walk(obj, path = []) {
-        if (!obj || typeof obj !== 'object') return;
-        if (visited.has(obj)) return;
-        visited.add(obj);
-
-        if (Array.isArray(obj)) {
-            obj.forEach((item, i) => walk(item, path.concat(String(i))));
-            return;
-        }
-
-        for (const [key, val] of Object.entries(obj)) {
-            const keyText = cleanExportText(key).toLowerCase();
-            const pathText = cleanExportText(path.concat(key).join(' ')).toLowerCase();
-            const targetText = `${keyText} ${pathText}`;
-
-            for (const [target, regs] of Object.entries(patterns)) {
-                if (found[target]) continue;
-                if (regs.every(r => r.test(targetText))) {
-                    found[target] = normalizeUnknownSection(val);
-                }
+    function extractByRegex(patterns) {
+        for (const p of patterns) {
+            const m = pageText.match(p);
+            if (m && m[1]) {
+                const v = cleanExportText(m[1]);
+                if (v) return v;
             }
-
-            walk(val, path.concat(key));
         }
+        return '';
     }
 
-    walk(postingData, []);
-    return found;
+    // Try direct "Label: value" or "Label value" extraction from overview text.
+    out.work_term_duration = extractByRegex([
+        /work\s*term\s*duration\s*[:\-]?\s*([^\n|]{1,120})/i,
+        /duration\s*[:\-]?\s*([^\n|]{1,120})/i
+    ]);
+    out.special_job_requirements = extractByRegex([
+        /special\s*job\s*requirements?\s*[:\-]?\s*([^\n]{1,400})/i,
+        /special\s*requirements?\s*[:\-]?\s*([^\n]{1,400})/i
+    ]);
+    out.required_skills = extractByRegex([
+        /required\s*skills?\s*[:\-]?\s*([^\n]{1,400})/i,
+        /skills?\s*required\s*[:\-]?\s*([^\n]{1,400})/i
+    ]);
+
+    return out;
 }
 
 function normalizeWtrSection(section) {
@@ -669,12 +498,27 @@ function extractHiringHistoryFromWtrReport(report) {
 }
 
 async function enrichJobsWithHiringHistory(jobs) {
-    // Tokens are embedded in page scripts by WaterlooWorks and reused here
-    // to call internal POST endpoints for richer export data.
+    // Fast mode: use only Work Term Rating report as the hiring history source.
     const overviewToken = extractActionToken('getPostingOverview');
     const postingDataToken = extractActionToken('getPostingData');
     const wtrReportToken = extractActionToken('getWorkTermRatingReportJson');
-    if (!overviewToken) return jobs;
+    const emptyHistory = {
+        hires_by_faculty: null,
+        hires_by_student_work_term_number: null,
+        most_frequently_hired_programs: null
+    };
+    const emptyExtra = {
+        work_term_duration: '',
+        special_job_requirements: '',
+        required_skills: ''
+    };
+    if (!postingDataToken || !wtrReportToken || !overviewToken) {
+        return jobs.map(job => ({
+            ...job,
+            hiring_history: emptyHistory,
+            ...emptyExtra
+        }));
+    }
 
     const postingIds = jobs
         .map(j => cleanExportText(j.posting_id))
@@ -682,6 +526,7 @@ async function enrichJobsWithHiringHistory(jobs) {
 
     const uniqPostingIds = Array.from(new Set(postingIds));
     const historyMap = {};
+    const extraMap = {};
     const concurrency = 6;
     let index = 0;
 
@@ -690,42 +535,21 @@ async function enrichJobsWithHiringHistory(jobs) {
             const i = index++;
             const pid = uniqPostingIds[i];
             try {
-                const [html, postingData] = await Promise.all([
-                    fetchPostingOverviewHtml(pid, overviewToken),
-                    postingDataToken ? fetchPostingDataJson(pid, postingDataToken) : Promise.resolve(null)
+                const [postingData, overviewHtml] = await Promise.all([
+                    fetchPostingDataJson(pid, postingDataToken),
+                    fetchPostingOverviewHtml(pid, overviewToken)
                 ]);
-
-                const fromOverview = parseHiringHistoryFromHtml(html);
-                const fromPostingData = extractHiringHistoryFromPostingData(postingData);
+                extraMap[pid] = extractFieldsFromOverviewHtml(overviewHtml);
                 const companyId = cleanExportText(
                     postingData?.divId?.value ?? postingData?.divId ?? ''
                 );
-                const wtrReport = (wtrReportToken && companyId)
+                const wtrReport = companyId
                     ? await fetchWorkTermRatingReportJson(companyId, wtrReportToken)
                     : null;
-                const fromWtrReport = extractHiringHistoryFromWtrReport(wtrReport);
-
-                historyMap[pid] = {
-                    // Priority order: explicit WTR report > structured postingData > HTML overview fallback.
-                    hires_by_faculty: fromWtrReport.hires_by_faculty
-                        || (!isEmptySection(fromPostingData.hires_by_faculty)
-                        ? fromPostingData.hires_by_faculty
-                        : fromOverview.hires_by_faculty),
-                    hires_by_student_work_term_number: fromWtrReport.hires_by_student_work_term_number
-                        || (!isEmptySection(fromPostingData.hires_by_student_work_term_number)
-                        ? fromPostingData.hires_by_student_work_term_number
-                        : fromOverview.hires_by_student_work_term_number),
-                    most_frequently_hired_programs: fromWtrReport.most_frequently_hired_programs
-                        || (!isEmptySection(fromPostingData.most_frequently_hired_programs)
-                        ? fromPostingData.most_frequently_hired_programs
-                        : fromOverview.most_frequently_hired_programs)
-                };
+                historyMap[pid] = extractHiringHistoryFromWtrReport(wtrReport);
             } catch (_e) {
-                historyMap[pid] = {
-                    hires_by_faculty: null,
-                    hires_by_student_work_term_number: null,
-                    most_frequently_hired_programs: null
-                };
+                historyMap[pid] = emptyHistory;
+                extraMap[pid] = emptyExtra;
             }
             await sleep(50);
         }
@@ -739,11 +563,8 @@ async function enrichJobsWithHiringHistory(jobs) {
 
     return jobs.map(job => ({
         ...job,
-        hiring_history: historyMap[job.posting_id] || {
-            hires_by_faculty: null,
-            hires_by_student_work_term_number: null,
-            most_frequently_hired_programs: null
-        }
+        hiring_history: historyMap[job.posting_id] || emptyHistory,
+        ...(extraMap[job.posting_id] || emptyExtra)
     }));
 }
 
@@ -780,32 +601,6 @@ function clickJobTitleInRow(row) {
     if (!link || !isVisibleElement(link)) return false;
     link.click();
     return true;
-}
-
-function clickWorkTermRatingTab() {
-    const candidates = Array.from(document.querySelectorAll('button, a, [role=\"tab\"], li, span'));
-    const target = candidates.find(el => {
-        const t = cleanExportText(el.innerText).toLowerCase();
-        return t.includes('work term rating') && isVisibleElement(el);
-    });
-    if (!target) return false;
-    target.click();
-    return true;
-}
-
-function closeJobDetailsView() {
-    const selectors = [
-        "button[aria-label*='Return to Job Search Overview']",
-        "a[aria-label*='Return to Job Search Overview']"
-    ];
-    for (const sel of selectors) {
-        const el = document.querySelector(sel);
-        if (el && isVisibleElement(el)) {
-            el.click();
-            return true;
-        }
-    }
-    return false;
 }
 
 async function ensureJobTableVisible() {
@@ -848,41 +643,6 @@ async function enterAllJobsListFirst() {
 
     allJobsBtn.click();
     await waitForCondition(() => getDataTable() !== null, 6000);
-}
-
-async function extractHiringHistoryForPosting(postingId) {
-    if (!(await ensureJobTableVisible())) return null;
-
-    const row = findJobRowByPostingId(postingId);
-    if (!row) return null;
-
-    if (!clickJobTitleInRow(row)) return null;
-
-    await waitForCondition(() => {
-        const t = document.body.innerText.toLowerCase();
-        return t.includes('work term rating') || t.includes('return to job search overview');
-    }, 12000);
-
-    clickWorkTermRatingTab();
-
-    await waitForCondition(() => {
-        const t = document.body.innerText.toLowerCase();
-        return t.includes('hires by faculty')
-            || t.includes('hires by student work term number')
-            || t.includes('most frequently hired programs');
-    }, 10000);
-
-    await sleep(800);
-    const hiringHistory = extractHiringHistoryData();
-
-    const closed = closeJobDetailsView();
-    if (!closed) {
-        try { window.history.back(); } catch (_e) {}
-    }
-    await ensureJobTableVisible();
-    await sleep(500);
-
-    return hiringHistory;
 }
 
 async function exportAllFilteredJobs(maxPages = 100) {
