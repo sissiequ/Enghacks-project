@@ -63,13 +63,34 @@ function ensureWidget() {
     });
 
     widget.innerHTML = `
+    <div id="coopsync-header" style="display:flex; align-items:center; justify-content:space-between; padding:14px 16px; border-bottom:1px solid #e8e8e8; background:#fff;">
+      <div style="font-size:13px; font-weight:800; letter-spacing:0.3px; color:#222;">CoopSync AI</div>
+      <button id="coopsync-close-btn" type="button" aria-label="Close suggestions" style="border:none; background:transparent; color:#444; font-size:13px; font-weight:700; cursor:pointer; padding:4px 8px; border-radius:6px;">Close</button>
+    </div>
     <div id="coopsync-content" style="padding:30px; flex: 1; overflow-y:auto; color: #111; display: block; background: #fafafa;">
       <div class="coopsync-loading" style="font-size: 18px; color: #666; text-align: center; margin-top: 50px;">Waiting for job details...</div>
     </div>
   `;
 
     document.body.appendChild(widget);
+
+    const closeBtn = document.getElementById('coopsync-close-btn');
+    if (closeBtn) {
+        closeBtn.addEventListener('click', () => {
+            closeWidgetPanel();
+        });
+    }
+
     return widget;
+}
+
+function closeWidgetPanel() {
+    isAnalyzing = false;
+    isWidgetOpen = false;
+    lastClosedJDHash = getJobText().slice(0, 3000);
+    waitForNewJobAfterClose = true;
+    const widget = document.getElementById('coopsync-widget');
+    if (widget) widget.style.display = 'none';
 }
 
 /**
@@ -207,12 +228,7 @@ function watchJobChanges() {
                           e.target.closest('.modal-close');
                           
         if (isClosing) {
-            isAnalyzing = false;
-            isWidgetOpen = false;
-            lastClosedJDHash = getJobText().slice(0, 3000);
-            waitForNewJobAfterClose = true;
-            const widget = document.getElementById('coopsync-widget');
-            if (widget) widget.style.display = 'none';
+            closeWidgetPanel();
         }
     });
 }
@@ -818,6 +834,42 @@ function isVisible(el) {
     return !!(el.offsetWidth || el.offsetHeight || el.getClientRects().length);
 }
 
+function clickElementSafely(el) {
+    if (!el || !isVisible(el)) return false;
+
+    const href = cleanText(el.getAttribute?.('href') || '').toLowerCase();
+    const isJsHref = href.startsWith('javascript:');
+
+    if (isJsHref) {
+        try {
+            if (typeof el.onclick === 'function') {
+                el.onclick({
+                    type: 'click',
+                    target: el,
+                    currentTarget: el,
+                    preventDefault() {},
+                    stopPropagation() {}
+                });
+                return true;
+            }
+        } catch (_e) {}
+
+        const row = el.closest('tr');
+        if (row) {
+            row.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, view: window }));
+            row.dispatchEvent(new MouseEvent('dblclick', { bubbles: true, cancelable: true, view: window }));
+            return true;
+        }
+    }
+
+    try {
+        el.click();
+        return true;
+    } catch (_e) {
+        return false;
+    }
+}
+
 async function waitUntil(fn, timeoutMs = 12000, intervalMs = 250) {
     const start = Date.now();
     while (Date.now() - start < timeoutMs) {
@@ -836,10 +888,15 @@ function findRowByPostingId(postingId) {
 
 function openRowPosting(row) {
     if (!row) return false;
-    const link = row.querySelector("td a.overflow--ellipsis, td a[href='javascript:void(0)'], td a");
+    const link = row.querySelector("td a.overflow--ellipsis")
+        || row.querySelector("td a[href='javascript:void(0)'], td a, td button");
     if (!link || !isVisible(link)) return false;
-    link.click();
-    return true;
+    try {
+        link.click();
+        return true;
+    } catch (_e) {
+        return clickElementSafely(link);
+    }
 }
 
 function openWtrTab() {
@@ -849,8 +906,7 @@ function openWtrTab() {
         return t.includes('work term rating') && isVisible(el);
     });
     if (!target) return false;
-    target.click();
-    return true;
+    return clickElementSafely(target);
 }
 
 function closeJobView() {
@@ -861,8 +917,7 @@ function closeJobView() {
     for (const sel of selectors) {
         const el = document.querySelector(sel);
         if (el && isVisible(el)) {
-            el.click();
-            return true;
+            return clickElementSafely(el);
         }
     }
     return false;
@@ -895,7 +950,7 @@ async function ensureJobsTable() {
 
     const allJobsBtn = findAllJobsBtn();
     if (allJobsBtn) {
-        allJobsBtn.click();
+        clickElementSafely(allJobsBtn);
         await waitUntil(() => findJobsTable() !== null, 6000);
     }
 
@@ -906,7 +961,7 @@ async function openAllJobs() {
     const allJobsBtn = findAllJobsBtn();
     if (!allJobsBtn) return;
 
-    allJobsBtn.click();
+    clickElementSafely(allJobsBtn);
     await waitUntil(() => findJobsTable() !== null, 6000);
 }
 
@@ -946,7 +1001,6 @@ async function getPostingHiringHistory(postingId) {
 }
 
 async function exportFilteredJobs(maxPages = 100) {
-    await openAllJobs();
     const all = [];
     const seen = new Set();
 
@@ -1000,11 +1054,18 @@ async function openPosting(postingId, maxPages = 120) {
         await ensureJobsTable();
         const row = findRowByPostingId(targetId);
         if (row && openRowPosting(row)) {
-            await waitUntil(() => {
+            const openedDetails = await waitUntil(() => {
                 const t = document.body.innerText.toLowerCase();
                 return t.includes('return to job search overview') || t.includes('work term rating');
             }, 10000);
-            return { success: true };
+            if (openedDetails) {
+                return { success: true };
+            }
+            return {
+                success: false,
+                error: `Posting ${targetId} was found, but job details did not open.`,
+                error_code: 'posting_open_failed'
+            };
         }
 
         const pageRows = getPageRows();
@@ -1060,7 +1121,14 @@ async function openApply(postingId, maxPages = 120) {
         };
     }
 
-    applyEl.click();
+    if (!clickElementSafely(applyEl)) {
+        return {
+            success: false,
+            error: `Posting ${postingId} opened, but Apply action could not be triggered.`,
+            error_code: 'apply_click_failed'
+        };
+    }
+
     return { success: true };
 }
 
@@ -1169,6 +1237,12 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         (async () => {
             try {
                 const result = await openPosting(request.postingId, 120);
+                if (result?.success && request.autoAnalyze) {
+                    const jdText = getJobText();
+                    if (jdText) {
+                        startAnalysis(jdText);
+                    }
+                }
                 sendResponse(result);
             } catch (error) {
                 sendResponse({ success: false, error: error.message || 'Open posting failed in content script.' });

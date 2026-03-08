@@ -1,3 +1,5 @@
+// Suggested by AI to make sure the API works*
+
 const apiKey = "AIzaSyD0XDL_p8oxiZ0ww4rw3AAe8WSZnSkuw0k";
 const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
 

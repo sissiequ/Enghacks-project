@@ -16,7 +16,8 @@ async function openPostingFromDashboard(ctx, postingId) {
     ctx,
     {
       action: "OPEN_POSTING_BY_ID",
-      postingId: normalizedPostingId
+      postingId: normalizedPostingId,
+      autoAnalyze: true
     },
     { activateTab: true }
   );

@@ -40,6 +40,9 @@ async function handleScoreJobsForDashboard(request) {
           `Applicants: ${job.apps}`,
           `Deadline: ${job.app_deadline}`,
           `Listing Text: ${job.raw_text}`,
+          job.work_term_duration && `Work Term Duration: ${job.work_term_duration}`,
+          job.special_job_requirements && `Special Job Requirements: ${job.special_job_requirements}`,
+          job.required_skills && `Required Skills: ${job.required_skills}`,
           hiringHistorySummary && `Hiring History: ${hiringHistorySummary}`
         ].filter(Boolean).join("\n"),
         850

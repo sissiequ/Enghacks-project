@@ -9,15 +9,17 @@
 async function sendMessageToWaterlooTab(ctx, message, options = {}) {
   // AI_GENERATED_START
   let tab = await getWaterlooWorksTab(ctx);
-  if (!tab?.id) {
-    await chrome.tabs.create({ url: ctx.WATERLOOWORKS_JOBS_URL, active: true });
-    await chrome.storage.local.set({
-      pendingWwAction: {
-        ...message,
-        createdAt: Date.now()
+  const createdNewTab = !tab?.id;
+  if (createdNewTab) {
+    tab = await chrome.tabs.create({ url: ctx.WATERLOOWORKS_JOBS_URL, active: true });
+    if (tab?.id) {
+      const start = Date.now();
+      while (Date.now() - start < 20000) {
+        const current = await chrome.tabs.get(tab.id);
+        if (current?.status === "complete") break;
+        await new Promise((resolve) => setTimeout(resolve, 250));
       }
-    });
-    return { success: true, queued: true };
+    }
   }
 
   let response;
@@ -35,6 +37,10 @@ async function sendMessageToWaterlooTab(ctx, message, options = {}) {
 
   if (options.activateTab) {
     await chrome.tabs.update(tab.id, { active: true });
+  }
+
+  if (createdNewTab && response?.queued) {
+    response = { ...response, openedTab: true };
   }
 
   return response;

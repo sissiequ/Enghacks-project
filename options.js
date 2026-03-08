@@ -24,6 +24,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const openDashboardBtn = document.getElementById('openDashboardBtn');
   const openWebStatus = document.getElementById('openWebStatus');
 
+
+  //===== function definition =====
   function isJobsPageUrl(url) {
     return typeof url === 'string' && url.includes('/myAccount/co-op/full/jobs.htm');
   }
@@ -52,18 +54,25 @@ document.addEventListener('DOMContentLoaded', () => {
   async function sendMessageWithRetry(tabId, message, retries = 12, delayMs = 350) {
     // AI_GENERATED_START
     let lastError = null;
+    let injectAttempted = false;
     for (let i = 0; i < retries; i += 1) {
       try {
         return await chrome.tabs.sendMessage(tabId, message);
       } catch (err) {
         lastError = err;
         const msg = String(err?.message || '');
-        if (msg.includes('Receiving end does not exist')) {
+        if (!injectAttempted && msg.includes('Receiving end does not exist')) {
           try {
+            const tab = await chrome.tabs.get(tabId);
+            if (!isJobsPageUrl(tab?.url || '')) {
+              throw err;
+            }
+            await waitForTabComplete(tabId, 15000);
             await chrome.scripting.executeScript({
               target: { tabId },
               files: ['content_helpers/bootstrapContent.js', 'content.js']
             });
+            injectAttempted = true;
           } catch (_injectErr) {}
         }
         await new Promise(resolve => setTimeout(resolve, delayMs));
@@ -76,15 +85,12 @@ document.addEventListener('DOMContentLoaded', () => {
   async function sendMessageToWaterlooTab(message, options = {}) {
     // AI_GENERATED_START
     let tab = await getWaterlooWorksTab();
-    if (!tab || !tab.id) {
+    const createdNewTab = !tab || !tab.id;
+    if (createdNewTab) {
       tab = await chrome.tabs.create({ url: WATERLOOWORKS_JOBS_URL, active: true });
-      await chrome.storage.local.set({
-        pendingWwAction: {
-          ...message,
-          createdAt: Date.now()
-        }
-      });
-      return { success: true, queued: true };
+      if (tab?.id) {
+        await waitForTabComplete(tab.id, 20000);
+      }
     }
 
     let response;
@@ -104,11 +110,23 @@ document.addEventListener('DOMContentLoaded', () => {
       await chrome.tabs.update(tab.id, { active: true });
     }
 
+    if (createdNewTab && response?.queued) {
+      response = { ...response, openedTab: true };
+    }
+
     return response;
     // AI_GENERATED_END
   }
 
+
+
+
+
+
+  //====== workflow starts here =======
   // Load existing data
+  //set is inputing
+  //get is outputing
   chrome.storage.local.get(['apiKey', 'geminiApiKey', 'resumeText'], function(result) {
     const savedKey = result.apiKey || result.geminiApiKey || '';
     if (savedKey && apiKeyInput) {
@@ -123,12 +141,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Save API Key
   if (saveApiBtn) {
+    //clicking 
     saveApiBtn.addEventListener('click', () => {
+      //get rid of the spacing and Tab
       const apiKey = apiKeyInput.value.trim();
+
+
+
       if (!apiKey) {
         alert("Please enter a valid API Key.");
         return;
       }
+
       // Save both keys for backward compatibility with old/new background logic.
       chrome.storage.local.set({ apiKey: apiKey, geminiApiKey: apiKey }, function() {
         if (apiStatus) {
@@ -147,7 +171,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (dropZone && fileInput) {
     dropZone.addEventListener('click', () => fileInput.click());
 
-    // Handle File Selection
+    // Handle File Selection*
     fileInput.addEventListener('change', (e) => {
       const file = e.target.files[0];
       if (file) {
@@ -155,7 +179,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
-    // Drag and Drop functionality
+    // Drag and Drop functionality*
     dropZone.addEventListener('dragover', (e) => {
       e.preventDefault();
       dropZone.classList.add('dragover');
@@ -252,7 +276,8 @@ document.addEventListener('DOMContentLoaded', () => {
       try {
         const response = await sendMessageToWaterlooTab({
           action: 'OPEN_POSTING_BY_ID',
-          postingId
+          postingId,
+          autoAnalyze: true
         }, { activateTab: true });
 
         if (!response || !response.success) {

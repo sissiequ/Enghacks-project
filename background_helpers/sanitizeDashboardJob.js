@@ -16,6 +16,9 @@ function sanitizeDashboardJob(job) {
     apps: (job?.apps || "").toString(),
     app_deadline: (job?.app_deadline || "").toString(),
     raw_text: cap(job?.raw_text || "", 400),
+    work_term_duration: cap(job?.work_term_duration || "", 120),
+    special_job_requirements: cap(job?.special_job_requirements || "", 700),
+    required_skills: cap(job?.required_skills || "", 900),
     hiring_history: job?.hiring_history || null
   };
 }

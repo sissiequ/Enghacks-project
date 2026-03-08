@@ -62,6 +62,13 @@
       background-color: #1557b0;
     }
 
+    .button-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
     .status {
       margin-top: 10px;
       color: #0d652d;
@@ -148,8 +155,10 @@
       <label for="postingIdInput">Posting ID</label>
       <input type="text" id="postingIdInput" placeholder="e.g. 327123">
     </div>
-    <button id="openPostingBtn">Open Job</button>
-    <button id="openApplyBtn" style="margin-left: 8px;">Open Apply</button>
+    <div class="button-row">
+      <button id="openPostingBtn">Open Job</button>
+      <button id="openApplyBtn">Open Apply</button>
+    </div>
     <div id="openPostingStatus" class="status" style="margin-top: 10px;"></div>
   </div>
 
