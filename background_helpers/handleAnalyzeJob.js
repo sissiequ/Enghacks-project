@@ -48,9 +48,10 @@ async function handleAnalyzeJob(request) {
   ]);
 
   return {
-    // Keep response shape stable for content-side renderer.
+    // Only keeep the first five content
     suggestions: Array.isArray(aiContent.suggestions) ? aiContent.suggestions.slice(0, 5) : []
   };
 }
 
+// Everyone can use this
 globalThis.handleAnalyzeJob = handleAnalyzeJob;
