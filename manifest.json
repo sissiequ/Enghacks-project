@@ -28,6 +28,7 @@
         "content.css"
       ],
       "js": [
+        "content_helpers/bootstrapContent.js",
         "content.js"
       ],
       "run_at": "document_idle"

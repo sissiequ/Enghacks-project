@@ -59,7 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
           try {
             await chrome.scripting.executeScript({
               target: { tabId },
-              files: ['content.js']
+              files: ['content_helpers/bootstrapContent.js', 'content.js']
             });
           } catch (_injectErr) {}
         }
@@ -195,6 +195,11 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!jobs.length) {
           throw new Error('No jobs found under current filter.');
         }
+
+        await chrome.storage.local.set({
+          dashboardJobs: jobs,
+          dashboardJobsUpdatedAt: Date.now()
+        });
 
         const ts = new Date().toISOString().replace(/[-:]/g, '').replace('T', '_').slice(0, 15);
         const filename = `waterlooworks_jobs_${ts}.json`;
