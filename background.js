@@ -228,6 +228,10 @@ async function handleScoreJobsForDashboard(request) {
   });
 }
 
+
+
+
+// main logic
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   const action = request?.action;
   if (!action) return false;
