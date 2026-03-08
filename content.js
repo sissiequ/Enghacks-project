@@ -10,8 +10,19 @@ let isExportingJobs = false;
  * Extracts job description text from the page.
  */
 function getJobText() {
-    const postingDiv = document.querySelector('.panel-body') || document.body;
-    return postingDiv.innerText.slice(0, 10000);
+    // Prefer explicit job containers first.
+    const postingDiv = document.querySelector('.panel-body')
+        || document.querySelector('[data-testid="job-description"]')
+        || document.querySelector('[id*="job"][id*="detail"]');
+    if (postingDiv) {
+        return cleanText(postingDiv.innerText).slice(0, 10000);
+    }
+
+    // Fallback: use whole page text but exclude our own widget text to avoid re-scan loops.
+    const bodyText = document.body?.innerText || '';
+    const widgetText = document.getElementById('coopsync-widget')?.innerText || '';
+    const pageText = widgetText ? bodyText.replace(widgetText, ' ') : bodyText;
+    return cleanText(pageText).slice(0, 10000);
 }
 
 /**
