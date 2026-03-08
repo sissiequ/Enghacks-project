@@ -166,44 +166,6 @@ body {
     color: transparent;
 }
 
-.search-container {
-    flex: 1;
-    max-width: 500px;
-    position: relative;
-}
-
-.search-icon {
-    position: absolute;
-    left: 1rem;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 18px;
-    height: 18px;
-    color: var(--text-muted);
-}
-
-#searchInput {
-    width: 100%;
-    padding: 0.8rem 1rem 0.8rem 2.75rem;
-    border-radius: 12px;
-    background: rgba(0, 0, 0, 0.4);
-    border: 1px solid var(--border-light);
-    color: var(--text-primary);
-    font-family: inherit;
-    font-size: 0.95rem;
-    outline: none;
-    transition: all 0.2s;
-}
-
-#searchInput:focus {
-    border-color: var(--accent-blue);
-    box-shadow: 0 0 0 3px rgba(51, 136, 255, 0.2);
-}
-
-#searchInput::placeholder {
-    color: var(--text-muted);
-}
-
 .stats {
     font-size: 0.9rem;
     color: var(--text-secondary);
@@ -383,21 +345,6 @@ body {
     border: 1px solid rgba(255, 51, 102, 0.28);
 }
 
-.company-logo-placeholder {
-    width: 44px;
-    height: 44px;
-    border-radius: 10px;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid var(--border-light);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-    font-size: 1.2rem;
-    color: var(--text-secondary);
-    flex-shrink: 0;
-}
-
 .job-details {
     display: flex;
     flex-direction: column;
@@ -417,14 +364,6 @@ body {
     width: 16px;
     height: 16px;
     color: var(--text-muted);
-}
-
-.detail-item.urgent {
-    color: #ffaa00;
-}
-
-.detail-item.urgent svg {
-    color: #ffaa00;
 }
 
 .tag-container {
@@ -506,9 +445,6 @@ body {
         flex-direction: column;
         align-items: stretch;
         gap: 1rem;
-    }
-    .search-container {
-        max-width: 100%;
     }
     .logo {
         justify-content: center;
