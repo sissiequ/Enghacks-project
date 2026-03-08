@@ -1,13 +1,39 @@
-# 项目说明
+# Project Notes
 
-## 人工智能标注规则
+## AI Labeling Rules
 
-本项目使用如下人工智能标注约定：
+This project uses AI labels to clearly separate:
+- coordination/messaging code that was AI-assisted
+- regular business logic that should stay easy for teammates to explain and maintain
+
+### Purpose
+
+The labeling system helps the team:
+1. identify AI-assisted code blocks quickly during review and demos
+2. keep function ownership clear across teammates
+3. avoid over-commenting generated coordination code while keeping business logic readable
+
+### Label Types
 
 - `AI_GENERATED_START` / `AI_GENERATED_END`
-  - 用于标记由人工智能生成或主导生成的代码区块。
-  - 被标记区块内部不再额外添加普通解释注释。
+  - Use these markers for AI-assisted coordination code blocks (for example runtime messaging, tab communication, and cross-module action routing).
+  - Do not add extra inline explanation comments inside these marked blocks.
 
-前端界面相关文件（HTML/CSS）统一使用 `AI_GENERATED` 文件头标注。
+- `AI_GENERATED` (file header style marker)
+  - Use this at the top of frontend UI files (HTML/CSS) that were AI-generated or AI-shaped.
 
-本文档不维护函数级别的详细标注清单；演示时以骨架结构和设计思路为主，按需再展开具体函数实现。
+### How To Use
+
+1. For cross-module communication or routing functions, wrap the function body (or major block) with:
+   - `AI_GENERATED_START`
+   - `AI_GENERATED_END`
+2. For detailed business logic functions, do not use AI block markers; instead, keep normal Input/Output and step comments.
+3. For UI-only files (`.html`, `.css`), keep the file-level `AI_GENERATED` header marker.
+4. Keep this README high-level. Do not maintain a per-function tracking table here.
+
+### Demo Guidance
+
+During demos, present:
+1. skeleton architecture and module boundaries first
+2. design decisions second
+3. only dive into specific function internals if asked
